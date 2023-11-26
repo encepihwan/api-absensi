@@ -1,0 +1,193 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Profile;
+use App\Models\RoleHasUser;
+use Illuminate\Http\Request;
+use Validator;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
+
+
+
+class AuthController extends Controller
+{
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+    }
+
+    public function login(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $credentials = $request->only('email', 'password');
+
+        // Cek apakah email sudah terdaftar
+        $user = User::where('email', $credentials['email'])->first();
+        if (!$user) {
+            return response()->json(['error' => 'Email not registered'], 401);
+        }
+
+        // Cek apakah password sesuai
+        if (!auth()->attempt($credentials)) {
+            return response()->json(['error' => 'Invalid password'], 401);
+        }
+
+        $token = auth()->attempt($credentials);
+
+        return $this->createNewToken($token);
+    }
+
+    public function register(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|between:2,100',
+                'userName' => 'required|string',
+                'email' => 'required|string|email|max:100|unique:users',
+                'password' => 'required|string|confirmed|min:6',
+            ]);
+            if ($validator->fails()) {
+                return response()->json($validator->errors()->toJson(), 400);
+            }
+            $user = User::create(array_merge(
+                $validator->validated(),
+                ['password' => bcrypt($request->password)]
+            ));
+
+            $profile = Profile::create([
+                'userId' => $user->id,
+                'name' => $request->name,
+            ]);
+
+            foreach ($request->roleId as $value) {
+                $roleHas = new RoleHasUser();
+                $roleHas->userId = $user->id;
+                $roleHas->roleId = $value;
+                $roleHas->save();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'User successfully registered',
+                'user' => $user,
+                'profile' => $profile
+            ], 200);
+        } catch (ValidationException $ex) {
+            DB::rollback();
+            return redirect()->back()->withErrors($ex->errors());
+        }
+    }
+
+    public function changePassword(Request $request)
+    {
+        try {
+
+            $validator = Validator::make($request->all(), [
+                'currentPassword' => 'required|string',
+                'newPassword' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors()->toJson(), 400);
+            }
+
+            // $user = Auth::user();
+            $user = auth()->user();
+            if (Hash::check($request->currentPassword, $user->password)) {
+                $user->update(['password' => bcrypt($request->newPassword)]);
+
+                return response()->json([
+                    'message' => 'Password successfully updated',
+                    'user' => $user,
+                ], 200);
+            } else {
+                return response()->json(['error' => 'Current password is incorrect'], 400);
+            }
+        } catch (ValidationException $ex) {
+            return response()->json(['error' => 'An error occurred while changing the password'], 500);
+        }
+    }
+
+    public function logout()
+    {
+        auth()->logout();
+        return response()->json(['message' => 'User successfully signed out']);
+    }
+
+    public function refresh()
+    {
+        return $this->createNewToken(auth()->refresh());
+    }
+
+    public function userProfile(Request $request)
+    {
+        // $user = User::with(['profile', 'role'])->find($request->userId);
+
+        // if (!$user) {
+        //     return response()->json(['message' => 'User not found'], 404);
+        // }
+
+        // $responseData = [
+        //     'name' => $user->name,
+        //     'foto' => $user->profile->foto,
+        //     'jabatan' => $user->profile->jabatan,
+        //     'email' => $user->email,
+        //     'roles' => $user->roles ? $user->roles->pluck('name') : [],
+        // ];
+
+        // return response()->json(['user' => $responseData]);
+
+        $user = auth()->user();
+        $user->load('profile', 'role');
+
+        $responseData = [
+            'mediaId' => optional($user->profile)->mediaId,
+            'jabatan' => optional($user->profile)->jabatan,
+            'name' => $user->name,
+            'userName' => $user->name, // Assuming 'userName' is the same as 'name', adjust if necessary
+            'email' => $user->email,
+            'url' => optional(optional($user->profile)->medias)->url,
+            'role' => $user->role ? $user->role->pluck('name')->toArray() : [], // Check if roles is not null
+        ];
+        
+        return response()->json([
+            'message' => 'success',
+            'status' => 'success',
+            'data' => $responseData
+        ]);
+    }
+
+    protected function createNewToken($token)
+    {
+
+        // $user = auth()->user();
+        // $role = $user->role;
+        // $profile = $user->profile;
+
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'message' => 'Login Success',
+            'status' => 'success',
+            'expires_in' => auth()->factory()->getTTL() * 60,
+            // 'user' => auth()->user(),
+            // 'role' => $role ? $role->name : 'No Role',
+            // 'profile' => $profile ? $profile->name : 'No Profile',
+        ]);
+    }
+}
