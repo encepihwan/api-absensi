@@ -3,7 +3,6 @@
 namespace App\Http\Helpers;
 
 use Illuminate\Support\Str;
-use Modules\Studio\Entities\Studio;
 use GuzzleHttp\Client;
 
 class MethodsHelpers
