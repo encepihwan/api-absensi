@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Helpers\MethodsHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -13,4 +14,11 @@ class Devision extends Model
     protected $fillable = [
         'name',
     ];
+
+    // === Scopre === //
+
+    public function scopeFilterByDateRange($query, $targetField, $since, $until)
+    {
+        MethodsHelpers::filterByDateRange($query, $targetField, $since, $until);
+    }
 }

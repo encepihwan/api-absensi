@@ -104,6 +104,15 @@ class MethodsHelpers
         return $request ? $request->user()->id : null;
     }
 
+    public static function filterByDateRange($query, $targetField, $since, $until)
+    {
+        if ($query && $since && $until) {
+            $query->whereBetween($targetField, [$since, $until]);
+        }
+
+        return $query;
+    }
+
 
     // DRY -> dont repeat yourself // 
 }

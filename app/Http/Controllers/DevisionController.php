@@ -18,7 +18,8 @@ class DevisionController extends Controller
     public function index(Request $request)
     {
         try {
-            $data = Devision::paginate($request->input('paginate', 10));
+            $data = Devision::filterByDateRange('created_at', $request->since, $request->until)
+                ->paginate($request->input('paginate', 10));
 
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
