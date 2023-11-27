@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Helpers\Json;
 use App\Models\Profile;
 use App\Models\RoleHasUser;
 use Illuminate\Http\Request;
@@ -164,7 +165,7 @@ class AuthController extends Controller
             'url' => optional(optional($user->profile)->medias)->url,
             'role' => $user->role ? $user->role->pluck('name')->toArray() : [], // Check if roles is not null
         ];
-        
+
         return response()->json([
             'message' => 'success',
             'status' => 'success',
@@ -175,19 +176,29 @@ class AuthController extends Controller
     protected function createNewToken($token)
     {
 
-        // $user = auth()->user();
-        // $role = $user->role;
-        // $profile = $user->profile;
-
-        return response()->json([
+        $responses = [
             'access_token' => $token,
             'token_type' => 'bearer',
             'message' => 'Login Success',
             'status' => 'success',
             'expires_in' => auth()->factory()->getTTL() * 60,
-            // 'user' => auth()->user(),
-            // 'role' => $role ? $role->name : 'No Role',
-            // 'profile' => $profile ? $profile->name : 'No Profile',
-        ]);
+        ];
+
+        return Json::response($responses);
+
+        // $user = auth()->user();
+        // $role = $user->role;
+        // $profile = $user->profile;
+
+        // return response()->json([
+        // 'access_token' => $token,
+        // 'token_type' => 'bearer',
+        // 'message' => 'Login Success',
+        // 'status' => 'success',
+        // 'expires_in' => auth()->factory()->getTTL() * 60,
+        // 'user' => auth()->user(),
+        // 'role' => $role ? $role->name : 'No Role',
+        // 'profile' => $profile ? $profile->name : 'No Profile',
+        // ]);
     }
 }
