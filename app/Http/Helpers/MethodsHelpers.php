@@ -105,45 +105,6 @@ class MethodsHelpers
         return $request ? $request->user()->id : null;
     }
 
-    public static function gettersStudio($request)
-    {
-        $studio = Studio::where('owner_id', MethodsHelpers::getterUserId($request))->first();
-        return $studio;
-    }
-
-    public static function setEmbedYoutube($url)
-    {
-        $ytId = explode('v=', $url);
-        if (isset($ytId[1])) {
-            $content_id = $ytId[1];
-            $split = explode('&', $ytId[1]);
-            $content_id = $split[0];
-        } else {
-            $content_id = $url;
-        }
-        $id_yt = $content_id;
-        $full_Url =  'https://www.youtube.com/watch?v=' . $content_id;
-        $url_embed = 'https://www.youtube.com/embed/' . $content_id;
-        $client = new Client();
-        $response = $client->get('https://www.youtube.com/oembed?url=' . $full_Url);
-        $res = json_decode($response->getBody(), true);
-        $data = [...$res, 'url_embed' => $url_embed];
-        return $data;
-    }
-
-    public static function setDataVideoYt($urls)
-    {
-        $data = [];
-        if (is_array($urls)) {
-            foreach ($urls as $key => $url) {
-                $res = MethodsHelpers::setEmbedYoutube($url);
-                array_push($data, $res);
-            }
-        }
-
-        return $data;
-    }
-
 
     // DRY -> dont repeat yourself // 
 }
