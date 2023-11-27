@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Helpers\Json;
 use App\Models\Devision;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -26,11 +27,8 @@ class DevisionController extends Controller
             } else {
                 $data = Devision::all();
             }
-            return response()->json([
-                'status' => 'success',
-                'message' => 'success',
-                'data' => $data,
-            ]);
+
+            return Json::response($data);
         } catch (ValidationException $ex) {
             return redirect()->back()->withErrors($ex->errors());
         }
@@ -102,7 +100,7 @@ class DevisionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-   
+
     /**
      * Update the specified resource in storage.
      *
@@ -130,7 +128,7 @@ class DevisionController extends Controller
                 'message' => 'success update data',
                 // 'data' => $data,
             ]);
-        }catch (ValidationException $ex) {
+        } catch (ValidationException $ex) {
             return redirect()->back()->withErrors($ex->errors());
         }
     }
