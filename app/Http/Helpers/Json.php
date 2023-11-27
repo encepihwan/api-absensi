@@ -45,10 +45,6 @@ class Json
             } else {
                 $result['data'] = $data->all();
             }
-
-
-            // $result = collect($result);
-            // $result = $result->merge($data);
         } else {
             $result['data'] = $data;
         }
@@ -58,7 +54,6 @@ class Json
                 $result['meta'][$add['name']] = $add['data'];
             }
         }
-        // $result['code'] = 200;
         $code = 200;
         return response()->json($result, $code);
     }

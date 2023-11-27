@@ -10,10 +10,6 @@ use Illuminate\Validation\ValidationException;
 
 class DevisionController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api');
-    }
     /**
      * Display a listing of the resource.
      *
@@ -22,15 +18,15 @@ class DevisionController extends Controller
     public function index(Request $request)
     {
         try {
-            if (isset($request->limit)) {
-                $data = $this->filter($request);
-            } else {
-                $data = Devision::all();
-            }
+            $data = Devision::paginate($request->input('paginate', 10));
 
             return Json::response($data);
-        } catch (ValidationException $ex) {
-            return redirect()->back()->withErrors($ex->errors());
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
 
@@ -56,20 +52,20 @@ class DevisionController extends Controller
                 'name' => 'required|string',
             ]);
             if ($validator->fails()) {
-                return response()->json($validator->errors()->toJson(), 400);
+                return Json::exception($validator->errors());
             }
 
-            $user = Devision::create(array_merge(
-                $validator->validated()
-            ));
+            $data = new Devision();
+            $data->name = $request->name;
+            $data->save();
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'success add data',
-                // 'data' => $data,
-            ]);
-        } catch (ValidationException $ex) {
-            return redirect()->back()->withErrors($ex->errors());
+            return Json::response($data);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
 
@@ -82,15 +78,14 @@ class DevisionController extends Controller
     public function show($id)
     {
         try {
-
-            $data = Devision::where('id', $id)->first();
-            return response()->json([
-                'status' => 'success',
-                'message' => 'success',
-                'data' => $data,
-            ]);
-        } catch (ValidationException $ex) {
-            return redirect()->back()->withErrors($ex->errors());
+            $data = Devision::findOrFail($id);
+            return Json::response($data);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
 
@@ -119,17 +114,16 @@ class DevisionController extends Controller
                 return response()->json($validator->errors()->toJson(), 400);
             }
 
-            $data = Devision::where('id', $id)->update([
-                'name' => $request->name
-            ]);
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'success update data',
-                // 'data' => $data,
-            ]);
-        } catch (ValidationException $ex) {
-            return redirect()->back()->withErrors($ex->errors());
+            $data = Devision::findOrFail($id);
+            $data->name = $request->input("name", $data->name);
+            $data->save();
+            return Json::response($data);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
 

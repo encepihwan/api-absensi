@@ -23,7 +23,7 @@ Route::group([
     'middleware' => 'api',
     // 'prefix' => 'auth'
 ], function ($router) {
-    $router->group(['prefix' => 'auth'], function($router){
+    $router->group(['prefix' => 'auth'], function ($router) {
         Route::post('/login', [AuthController::class, 'login']);
         Route::post('/register', [AuthController::class, 'register']);
         Route::post('/logout', [AuthController::class, 'logout']);
@@ -31,17 +31,17 @@ Route::group([
         Route::post('/change-password', [AuthController::class, 'changePassword']);
     });
 
-    $router->group(['prefix' => 'profile'], function($router){
+    $router->group(['prefix' => 'profile'], function ($router) {
         Route::get('/', [AuthController::class, 'userProfile']);
         Route::get('edit', [ProfileController::class, 'edit']);
-        Route::post('update/{id}', [ProfileController::class, 'update']);  
+        Route::post('update/{id}', [ProfileController::class, 'update']);
     });
-    
-    $router->group(['prefix' => 'attendances'], function($router){
+
+    $router->group(['prefix' => 'attendances'], function ($router) {
         Route::post('/', [AttendacesController::class, 'Attendances']);
     });
-    
-    $router->group(['prefix' => 'project'], function($router){
+
+    $router->group(['prefix' => 'project'], function ($router) {
         Route::get('/', [ProjectController::class, 'index']);
         Route::post('/store', [ProjectController::class, 'store']);
         Route::get('/show/{id}', [ProjectController::class, 'show']);
@@ -50,14 +50,22 @@ Route::group([
 
         Route::get('/global', [ProjectController::class, 'global_function']);
     });
-    
-    $router->group(['prefix' => 'devision'], function($router){
-        Route::get('/', [DevisionController::class, 'index']);
-        Route::post('/store', [DevisionController::class, 'store']);
-        Route::get('/show/{id}', [DevisionController::class, 'show']);
-        Route::post('/update/{id}', [DevisionController::class, 'update']);
-        Route::post('/destroy/{id}', [DevisionController::class, 'destroy']);
-        // Route::apiResource('', DevisionController::class);
-    });
-    
+
+    // $router->group(['prefix' => 'devision'], function ($router) {
+    //     Route::get('/', [DevisionController::class, 'index']);
+    //     Route::post('/store', [DevisionController::class, 'store']);
+    //     Route::get('/show/{id}', [DevisionController::class, 'show']);
+    //     Route::post('/update/{id}', [DevisionController::class, 'update']);
+    //     Route::post('/destroy/{id}', [DevisionController::class, 'destroy']);
+    //     // Route::apiResource('', DevisionController::class);
+    // })->middleware(['auth:api']);
+});
+
+Route::prefix('devision')->middleware('auth:api')->group(function () {
+    Route::get('/', [DevisionController::class, 'index']);
+    Route::post('/store', [DevisionController::class, 'store']);
+    Route::get('/show/{id}', [DevisionController::class, 'show']);
+    Route::post('/update/{id}', [DevisionController::class, 'update']);
+    Route::post('/destroy/{id}', [DevisionController::class, 'destroy']);
+    Route::apiResource('', DevisionController::class);
 });
