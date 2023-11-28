@@ -43,7 +43,7 @@ class AuthController extends Controller
 
         // Cek apakah password sesuai
         if (!auth()->attempt($credentials)) {
-            return response()->json(['error' => 'Invalid password'], 401);
+            return Json::exception("Invalid password");
         }
 
         $token = auth()->attempt($credentials);
@@ -163,7 +163,7 @@ class AuthController extends Controller
             'userName' => $user->name, // Assuming 'userName' is the same as 'name', adjust if necessary
             'email' => $user->email,
             'url' => optional(optional($user->profile)->medias)->url,
-            'role' => $user->role ? $user->role->pluck('name')->toArray() : [], // Check if roles is not null
+            'role' => $user->role, // Check if roles is not null
         ];
 
         return response()->json([
