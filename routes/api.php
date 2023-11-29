@@ -49,6 +49,7 @@ Route::group([
         Route::post('/destroy/{id}', [ProjectController::class, 'destroy']);
 
         Route::get('/global', [ProjectController::class, 'global_function']);
+        Route::get('/detail-project', [ProjectController::class, 'detailProject']);
     });
 
     // $router->group(['prefix' => 'devision'], function ($router) {

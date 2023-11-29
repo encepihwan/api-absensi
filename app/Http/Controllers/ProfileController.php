@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Helpers\Json;
 use App\Models\Profile;
 use App\Models\Medias;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
 
 use function PHPSTORM_META\type;
 
@@ -25,13 +27,13 @@ class ProfileController extends Controller
 
             $data->pictures = $imageUrl;
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'success add data',
-                'data' => $data
-            ]);
-        } catch (ValidationException $ex) {
-            return redirect()->back()->withErrors($ex->errors());
+            return Json::response($data);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
 
@@ -93,12 +95,17 @@ class ProfileController extends Controller
                     'address' => $request->address,
                 ]);
 
-                return response()->json(['message' => 'Data berhasil diperbarui']);
+                return Json::response($data);
             } else {
-                return response()->json(['message' => 'Data tidak ditemukan'], 404);
+                return Json::exception($message = 'Data tidak ditemukan');
             }
-        } catch (ValidationException $ex) {
-            return redirect()->back()->withErrors($ex->errors());
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            DB::rollBack();
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
 }

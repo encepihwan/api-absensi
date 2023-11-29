@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Profile;
 use App\Models\Project;
-
+use App\Http\Helpers\Json;
+use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ProjectController extends Controller
 {
@@ -28,13 +31,14 @@ class ProjectController extends Controller
             } else {
                 $data = Project::all();
             }
-            return response()->json([
-                'status' => 'success',
-                'message' => 'success',
-                'data' => $data,
-            ]);
-        } catch (ValidationException $ex) {
-            return redirect()->back()->withErrors($ex->errors());
+
+            return Json::response($data);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
 
@@ -67,7 +71,7 @@ class ProjectController extends Controller
                 'rowStatus' => 'required|boolean',
                 'address' => 'required|string',
                 'latitude' => 'required|string',
-                'longtitude'=> 'required|string'
+                'longtitude' => 'required|string'
             ]);
 
             if ($validator->fails()) {
@@ -77,14 +81,13 @@ class ProjectController extends Controller
             $data = Project::create(array_merge(
                 $validator->validated()
             ));
-
-            return response()->json([
-                'status' => 'success',
-                'message' => 'success add data',
-                // 'data' => $data,
-            ]);
-        } catch (ValidationException $ex) {
-            return redirect()->back()->withErrors($ex->errors());
+            return Json::response();
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
 
@@ -97,15 +100,15 @@ class ProjectController extends Controller
     public function show($id)
     {
         try {
-
             $data = Project::where('id', $id)->first();
-            return response()->json([
-                'status' => 'success',
-                'message' => 'success',
-                'data' => $data,
-            ]);
-        } catch (ValidationException $ex) {
-            return redirect()->back()->withErrors($ex->errors());
+            return Json::response($data);
+            return Json::response($data);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
 
@@ -115,7 +118,7 @@ class ProjectController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-   
+
     /**
      * Update the specified resource in storage.
      *
@@ -126,25 +129,50 @@ class ProjectController extends Controller
     public function update(Request $request, $id)
     {
         try {
-
             $validator = Validator::make($request->all(), [
-                'name' => 'required|string',
+                'devisionId' => 'required|integer',
+                'userId' => 'required|integer',
+                'projectNo' => 'required|string',
+                'startdate' => 'required|date',
+                'targetdate' => 'required|date',
+                'cost' => 'required|integer',
+                'status' => 'required|string',
+                'rowStatus' => 'required|boolean',
+                'address' => 'required|string',
+                'latitude' => 'required|string',
+                'longtitude' => 'required|string'
             ]);
+
             if ($validator->fails()) {
                 return response()->json($validator->errors()->toJson(), 400);
             }
 
             $data = Project::where('id', $id)->update([
-                'name' => $request->name
+                'devisionId' => $request->devisionId,
+                'userId' => $request->userId,
+                'projectNo' => $request->projectNo,
+                'startdate' => $request->startdate,
+                'targetdate' => $request->targetdate,
+                'cost' => $request->cost,
+                'status' => $request->status,
+                'rowStatus' => $request->rowStatus,
+                'address' => $request->address,
+                'latitude' => $request->latitude,
+                'longtitude' => $request->longtitude
             ]);
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'success update data',
-                // 'data' => $data,
-            ]);
-        }catch (ValidationException $ex) {
-            return redirect()->back()->withErrors($ex->errors());
+            // return response()->json([
+            //     'status' => 'success',
+            //     'message' => 'success update data',
+            //     // 'data' => $data,
+            // ]);
+            return Json::response($data);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
 
@@ -159,13 +187,13 @@ class ProjectController extends Controller
         try {
 
             Project::where('id', $id)->delete();
-            return response()->json([
-                'status' => 'success',
-                'message' => 'success delete data',
-                // 'data' => $data,
-            ]);
-        } catch (ValidationException $ex) {
-            return redirect()->back()->withErrors($ex->errors());
+            return Json::response();
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
 
@@ -176,16 +204,44 @@ class ProjectController extends Controller
         return $data;
     }
 
-    public function global_function(Request $request){
+    public function global_function(Request $request)
+    {
         try {
             $data = Project::where('devisionId', $request->devisionId)->get();
-            return response()->json([
-                'status' => 'success',
-                'message' => 'success',
-                'data' => $data,
-            ]);
-        } catch (ValidationException $ex) {
-            return redirect()->back()->withErrors($ex->errors());
+            return Json::response($data);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        }
+    }
+    
+    public function detailProject(Request $request)
+    {
+        try {
+            $dateNow = Carbon::now()->toDateString();
+            $project = Project::where('id', $request->projectId)->first();
+            $userId = $project->userId;
+            // dd($userId, $dateNow);
+            $attendance = Attendance::where('date', $dateNow)
+            ->where('userId', $userId)
+            ->get();
+
+            $data = [
+                'project' => $project,
+                'attendance' => $attendance
+            ];
+            
+            return Json::response($data);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
 }

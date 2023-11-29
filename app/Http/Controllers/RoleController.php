@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Helpers\Json;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -13,22 +14,29 @@ class RoleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->middleware('auth:api');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        try{
-            $data = Role::paginate(10);
+        try {
+            
+            if (isset($request->limit)) {
+                $data = $this->filter($request);
+            } else {
+                $data = Role::all();
+            }
 
-            return response()->json([
-                'status' => 'success',
-                'message' => 'success',
-                'data' => $data,
-            ]);
-        }catch(ValidationException $ex){
-            return redirect()->back()->withErrors($ex->errors());
+            return Json::response($data);
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
 
@@ -50,14 +58,15 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        try{
+        try {
             Role::create($request->all());
-            return response()->json([
-                'status' => 'success',
-                'message' => 'success add data',
-            ]);
-        }catch(ValidationException $ex){
-            return redirect()->back()->withErrors($ex->errors());
+            return Json::response();
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
 
@@ -80,16 +89,16 @@ class RoleController extends Controller
      */
     public function edit($id)
     {
-        try{
+        try {
             $data = Role::find($id);
-            
-            return response()->json([
-                'status' => 'success',
-                'message' => 'success add data',
-                'data' => $data
-            ]);
-        }catch(ValidationException $ex){
-            return redirect()->back()->withErrors($ex->errors());
+
+            return Json::response($data);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
 
@@ -102,20 +111,20 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
-        try{
+        try {
 
             $data = Role::find($id);
             $data->update([
                 'name' => $request->name,
             ]);
-    
-            return response()->json([
-                'status' => 'success',
-                'message' => 'success update data',
-            ]);
 
-        }catch(ValidationException $ex){
-            return redirect()->back()->withErrors($ex->errors());
+            return Json::response($data);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
 
@@ -127,16 +136,22 @@ class RoleController extends Controller
      */
     public function destroy($id)
     {
-        try
-        {
-            $data = Role::find($id)->delete();  
-            return response()->json([
-                'status' => 'success',
-                'message' => 'success delete data',
-            ]);
-
-        }catch(ValidationException $ex){
-            return redirect()->back()->withErrors($ex->errors());
+        try {
+            $data = Role::find($id)->delete();
+            return Json::response($data);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
+    }
+
+    public function filter(Request $request)
+    {
+        $data = Role::paginate($request->limit != "" ? $request->limit : 10);
+
+        return $data;
     }
 }

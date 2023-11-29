@@ -83,11 +83,17 @@ class AuthController extends Controller
 
             DB::commit();
 
-            return response()->json([
-                'message' => 'User successfully registered',
+            $data = [
                 'user' => $user,
                 'profile' => $profile
-            ], 200);
+            ];
+
+            return Json::response($data);
+            // return response()->json([
+            //     'message' => 'User successfully registered',
+            //     'user' => $user,
+            //     'profile' => $profile
+            // ], 200);
         } catch (ValidationException $ex) {
             DB::rollback();
             return redirect()->back()->withErrors($ex->errors());
@@ -127,7 +133,8 @@ class AuthController extends Controller
     public function logout()
     {
         auth()->logout();
-        return response()->json(['message' => 'User successfully signed out']);
+        return Json::response();
+        // return response()->json(['message' => 'User successfully signed out']);
     }
 
     public function refresh()
@@ -156,21 +163,17 @@ class AuthController extends Controller
         $user = auth()->user();
         $user->load('profile', 'role');
 
-        $responseData = [
+        $data = [
             'mediaId' => optional($user->profile)->mediaId,
             'jabatan' => optional($user->profile)->jabatan,
             'name' => $user->name,
-            'userName' => $user->name, // Assuming 'userName' is the same as 'name', adjust if necessary
+            'userName' => $user->name, 
             'email' => $user->email,
             'url' => optional(optional($user->profile)->medias)->url,
-            'role' => $user->role, // Check if roles is not null
+            'role' => $user->role,
         ];
-
-        return response()->json([
-            'message' => 'success',
-            'status' => 'success',
-            'data' => $responseData
-        ]);
+        
+        return Json::response($data);
     }
 
     protected function createNewToken($token)
@@ -185,20 +188,5 @@ class AuthController extends Controller
         ];
 
         return Json::response($responses);
-
-        // $user = auth()->user();
-        // $role = $user->role;
-        // $profile = $user->profile;
-
-        // return response()->json([
-        // 'access_token' => $token,
-        // 'token_type' => 'bearer',
-        // 'message' => 'Login Success',
-        // 'status' => 'success',
-        // 'expires_in' => auth()->factory()->getTTL() * 60,
-        // 'user' => auth()->user(),
-        // 'role' => $role ? $role->name : 'No Role',
-        // 'profile' => $profile ? $profile->name : 'No Profile',
-        // ]);
     }
 }
