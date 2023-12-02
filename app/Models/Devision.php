@@ -21,4 +21,9 @@ class Devision extends Model
     {
         MethodsHelpers::filterByDateRange($query, $targetField, $since, $until);
     }
+
+    public function scopeFilterByField($query, $record, $target)
+    {
+        MethodsHelpers::filterByField($query, $record, $target);
+    }
 }

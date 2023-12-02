@@ -26,11 +26,7 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         try {
-            if (isset($request->limit)) {
-                $data = $this->filter($request);
-            } else {
-                $data = Project::all();
-            }
+            $project = Project::filterByField('devisionId')->paginate($request->input('paginate', 10));
 
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -217,7 +213,7 @@ class ProjectController extends Controller
             return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
-    
+
     public function detailProject(Request $request)
     {
         try {
@@ -226,16 +222,15 @@ class ProjectController extends Controller
             $userId = $project->userId;
             // dd($userId, $dateNow);
             $attendance = Attendance::where('date', $dateNow)
-            ->where('userId', $userId)
-            ->get();
+                ->where('userId', $userId)
+                ->get();
 
             $data = [
                 'project' => $project,
                 'attendance' => $attendance
             ];
-            
-            return Json::response($data);
 
+            return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         } catch (\Illuminate\Database\QueryException $e) {

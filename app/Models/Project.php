@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Helpers\MethodsHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -21,4 +22,9 @@ class Project extends Model
         'latitude',
         'longtitude'
     ];
+
+    public function scopeFilterByField($query, $record, $value)
+    {
+        MethodsHelpers::filterByField($query, $record, $value);
+    }
 }

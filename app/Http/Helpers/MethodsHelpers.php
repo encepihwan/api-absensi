@@ -113,6 +113,15 @@ class MethodsHelpers
         return $query;
     }
 
+    public static function filterByField($query, $record, $target)
+    {
+        if ($query && $record && $target) {
+            $query->where($record, $target);
+        }
+
+        return $query;
+    }
+
 
     // DRY -> dont repeat yourself // 
 }
