@@ -76,7 +76,7 @@ class ProjectController extends Controller
             $data = Project::create(array_merge(
                 $validator->validated()
             ));
-            return Json::response();
+            return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         } catch (\Illuminate\Database\QueryException $e) {
