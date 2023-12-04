@@ -28,7 +28,7 @@ class ProjectController extends Controller
         try {
             $project = Project::filterByField('devisionId', $request->division_id)->paginate($request->input('paginate', 10));
 
-            return Json::response($data);
+            return Json::response($project);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         } catch (\Illuminate\Database\QueryException $e) {
