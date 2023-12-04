@@ -42,14 +42,14 @@ Route::group([
     });
 
     $router->group(['prefix' => 'project'], function ($router) {
-        Route::get('/', [ProjectController::class, 'index']);
-        Route::post('/store', [ProjectController::class, 'store']);
-        Route::get('/show/{id}', [ProjectController::class, 'show']);
-        Route::post('/update/{id}', [ProjectController::class, 'update']);
-        Route::post('/destroy/{id}', [ProjectController::class, 'destroy']);
+        // Route::get('/', [ProjectController::class, 'index']);
+        // Route::post('/store', [ProjectController::class, 'store']);
+        // Route::get('/show/{id}', [ProjectController::class, 'show']);
+        // Route::post('/update/{id}', [ProjectController::class, 'update']);
+        // Route::post('/destroy/{id}', [ProjectController::class, 'destroy']);
 
-        Route::get('/global', [ProjectController::class, 'global_function']);
-        Route::get('/detail-project', [ProjectController::class, 'detailProject']);
+        // Route::get('/global', [ProjectController::class, 'global_function']);
+        // Route::get('/detail-project', [ProjectController::class, 'detailProject']);
     });
 
     // $router->group(['prefix' => 'devision'], function ($router) {
@@ -68,5 +68,16 @@ Route::prefix('devision')->middleware('auth:api')->group(function () {
     Route::get('/show/{id}', [DevisionController::class, 'show']);
     Route::post('/update/{id}', [DevisionController::class, 'update']);
     Route::post('/destroy/{id}', [DevisionController::class, 'destroy']);
-    Route::apiResource('', DevisionController::class);
+    // Route::apiResource('', DevisionController::class);
+});
+
+Route::prefix('project')->middleware('auth:api')->group(function () {
+    Route::get('/', [ProjectController::class, 'index']);
+    Route::post('/store', [ProjectController::class, 'store']);
+    Route::get('/show/{id}', [ProjectController::class, 'show']);
+    Route::post('/update/{id}', [ProjectController::class, 'update']);
+    Route::post('/destroy/{id}', [ProjectController::class, 'destroy']);
+
+    Route::get('/global', [ProjectController::class, 'global_function']);
+    Route::get('/detail-project', [ProjectController::class, 'detailProject']);
 });

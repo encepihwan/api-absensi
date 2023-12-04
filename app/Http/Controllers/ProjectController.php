@@ -14,10 +14,6 @@ use Carbon\Carbon;
 
 class ProjectController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api');
-    }
     /**
      * Display a listing of the resource.
      *
@@ -26,7 +22,9 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         try {
-            $project = Project::filterByField('devisionId', $request->division_id)->paginate($request->input('paginate', 10));
+            $project = Project::filterByField('devisionId', $request->division_id)
+                ->filterByField('status', $request->status)
+                ->paginate($request->input('paginate', 10));
 
             return Json::response($project);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -68,10 +66,11 @@ class ProjectController extends Controller
                 'address' => 'required|string',
                 'latitude' => 'required|string',
                 'longtitude' => 'required|string'
+                'name' => 'required|string',
             ]);
 
             if ($validator->fails()) {
-                return response()->json($validator->errors()->toJson(), 400);
+                throw Json::response($validator->errors()->toJson(), 400);
             }
 
             $data = Project::create(array_merge(
