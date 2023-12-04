@@ -65,7 +65,7 @@ class ProjectController extends Controller
                 'rowStatus' => 'required|boolean',
                 'address' => 'required|string',
                 'latitude' => 'required|string',
-                'longtitude' => 'required|string'
+                'longtitude' => 'required|string',
                 'name' => 'required|string',
             ]);
 
