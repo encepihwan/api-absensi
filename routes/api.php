@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DevisionController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 
@@ -80,4 +81,13 @@ Route::prefix('project')->middleware('auth:api')->group(function () {
 
     Route::get('/global', [ProjectController::class, 'global_function']);
     Route::get('/detail-project', [ProjectController::class, 'detailProject']);
+});
+
+Route::prefix('attendance')->middleware('auth:api')->group(function () {
+    Route::post('/', [AttendacesController::class, 'store']);
+    Route::get('/log', [AttendacesController::class, 'attendanceLogs']);
+});
+
+Route::prefix("media")->middleware('auth:api')->group(function () {
+    Route::post('/', [MediaController::class, 'store']);
 });

@@ -13,11 +13,6 @@ use Illuminate\Validation\ValidationException;
 
 class AttendacesController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api');
-    }
-
     public function Attendances(Request $request)
     {
         try {
@@ -30,7 +25,7 @@ class AttendacesController extends Controller
                 'latitude' => 'required',
                 'longtitude' => 'required'
             ]);
-            
+
             if ($validator->fails()) {
                 return response()->json($validator->errors()->toJson(), 400);
             }
@@ -60,6 +55,63 @@ class AttendacesController extends Controller
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             DB::rollBack();
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        }
+    }
+
+    public function store(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'mediaAttendaceId' => 'required',
+                'mediaOfWorkId' => 'required',
+                'latitude' => 'required',
+                'longtitude' => 'required',
+                'projectId' => 'required'
+            ]);
+
+            if ($validator->fails()) {
+                return Json::response($validator->errors()->toJson(), 400);
+            }
+
+            $data = new Attendance();
+            $user = auth()->user();
+            $data->userId = $user->id;
+            $data->mediaAttendaceId = $request->mediaAttendaceId;
+            $data->mediaOfWorkId = $request->mediaOfWorkId;
+            $data->projectId = $request->projectId;
+            $data->latitude = $request->latitude;
+            $data->longtitude = $request->longtitude;
+            $data->projectId = $request->projectId;
+            $data->date = Carbon::now();
+            $data->type = $request->action;
+            $data->time = Carbon::now()->toTimeString();
+            $data->save();
+
+            return Json::response($data);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        }
+    }
+
+    public function attendanceLogs(Request $request)
+    {
+        try {
+            $data = Attendance::entities($request->entities)
+                ->filterByField('projectId', $request->projectId)
+                ->filterByField('userId', auth()->user()->id)
+                ->paginate($request->input('paginate', 10));
+
+            return Json::response($data);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         } catch (\Illuminate\Database\QueryException $e) {
             return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');

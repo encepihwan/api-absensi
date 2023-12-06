@@ -23,6 +23,7 @@ class ProjectController extends Controller
     {
         try {
             $project = Project::filterByField('devisionId', $request->division_id)
+                ->entities($request->entities)
                 ->filterByField('status', $request->status)
                 ->paginate($request->input('paginate', 10));
 
@@ -70,7 +71,7 @@ class ProjectController extends Controller
             ]);
 
             if ($validator->fails()) {
-                throw Json::response($validator->errors()->toJson(), 400);
+                return Json::response($validator->errors()->toJson(), 400);
             }
 
             $data = Project::create(array_merge(
@@ -139,28 +140,21 @@ class ProjectController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json($validator->errors()->toJson(), 400);
+                return Json::exception($validator->errors()->toJson(), 400);
             }
 
-            $data = Project::where('id', $id)->update([
-                'devisionId' => $request->devisionId,
-                'userId' => $request->userId,
-                'projectNo' => $request->projectNo,
-                'startdate' => $request->startdate,
-                'targetdate' => $request->targetdate,
-                'cost' => $request->cost,
-                'status' => $request->status,
-                'rowStatus' => $request->rowStatus,
-                'address' => $request->address,
-                'latitude' => $request->latitude,
-                'longtitude' => $request->longtitude
-            ]);
+            $data = Project::findOrFail($id);
+            $data->name = $request->input('name', $data->name);
+            $data->startdate = $request->input('startdate', $data->startdate);
+            $data->targetdate = $request->input('targetdate', $data->targetdate);
+            $data->cost = $request->input('cost', $data->cost);
+            $data->status = $request->input('status', $data->status);
+            $data->rowStatus = $request->input('rowStatus', $data->rowStatus);
+            $data->address = $request->input('address', $data->address);
+            $data->latitude = $request->input('latitude', $data->latitude);
+            $data->longtitude = $request->input('longtitude', $data->longtitude);
 
-            // return response()->json([
-            //     'status' => 'success',
-            //     'message' => 'success update data',
-            //     // 'data' => $data,
-            // ]);
+
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
@@ -180,7 +174,6 @@ class ProjectController extends Controller
     public function destroy($id)
     {
         try {
-
             Project::where('id', $id)->delete();
             return Json::response();
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {

@@ -27,4 +27,9 @@ class Project extends Model
     {
         MethodsHelpers::filterByField($query, $record, $value);
     }
+
+    public function scopeEntities($query, $entities)
+    {
+        MethodsHelpers::entities($query, $entities);
+    }
 }
