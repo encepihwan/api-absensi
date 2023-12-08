@@ -71,7 +71,8 @@ class AttendacesController extends Controller
                 'mediaOfWorkId' => 'required',
                 'latitude' => 'required',
                 'longtitude' => 'required',
-                'projectId' => 'required'
+                'projectId' => 'required',
+                'time' => 'required'
             ]);
 
             if ($validator->fails()) {
@@ -89,7 +90,7 @@ class AttendacesController extends Controller
             $data->projectId = $request->projectId;
             $data->date = Carbon::now();
             $data->type = $request->action;
-            $data->time = Carbon::now()->toTimeString();
+            $data->time = $request->time;
             $data->save();
 
             return Json::response($data);
