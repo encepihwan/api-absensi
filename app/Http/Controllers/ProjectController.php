@@ -149,8 +149,6 @@ class ProjectController extends Controller
             $data->latitude = $request->input('latitude', $data->latitude);
             $data->longtitude = $request->input('longtitude', $data->longtitude);
             $data->save();
-
-
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
