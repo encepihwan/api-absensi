@@ -148,6 +148,7 @@ class ProjectController extends Controller
             $data->address = $request->input('address', $data->address);
             $data->latitude = $request->input('latitude', $data->latitude);
             $data->longtitude = $request->input('longtitude', $data->longtitude);
+            $data->save();
 
 
             return Json::response($data);
