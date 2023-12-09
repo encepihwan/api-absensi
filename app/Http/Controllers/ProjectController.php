@@ -74,9 +74,25 @@ class ProjectController extends Controller
                 return Json::response($validator->errors()->toJson(), 400);
             }
 
-            $data = Project::create(array_merge(
-                $validator->validated()
-            ));
+            $data = new Project();
+            $data->devisionId = $request->devisionId;
+            $data->userId = $request->userId;
+            $data->projectNo = $request->projectNo;
+            $data->startdate = $request->startdate;
+            $data->targetdate = $request->targetdate;
+            $data->cost = $request->cost;
+            $data->status = $request->status;
+            $data->rowStatus = $request->rowStatus;
+            $data->address = $request->address;
+            $data->latitude = $request->latitude;
+            $data->longtitude = $request->longtitude;
+            $data->name = $request->name;
+
+            $data->save();
+
+            return Json::response('Project created successfully', 201);
+
+            $data
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
