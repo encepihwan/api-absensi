@@ -89,10 +89,6 @@ class ProjectController extends Controller
             $data->name = $request->name;
 
             $data->save();
-
-            return Json::response('Project created successfully', 201);
-
-            $data
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
