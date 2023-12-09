@@ -137,24 +137,6 @@ class ProjectController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'devisionId' => 'required|integer',
-                'userId' => 'required|integer',
-                'projectNo' => 'required|string',
-                'startdate' => 'required|date',
-                'targetdate' => 'required|date',
-                'cost' => 'required|integer',
-                'status' => 'required|string',
-                'rowStatus' => 'required|boolean',
-                'address' => 'required|string',
-                'latitude' => 'required|string',
-                'longtitude' => 'required|string'
-            ]);
-
-            if ($validator->fails()) {
-                return Json::exception($validator->errors()->toJson(), 400);
-            }
-
             $data = Project::findOrFail($id);
             $data->name = $request->input('name', $data->name);
             $data->slug = Project::generatedSlug($data->name);
