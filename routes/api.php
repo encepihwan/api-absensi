@@ -85,6 +85,7 @@ Route::prefix('project')->middleware('auth:api')->group(function () {
 
 Route::prefix('attendance')->middleware('auth:api')->group(function () {
     Route::post('/', [AttendacesController::class, 'store']);
+    Route::get('/summary', [AttendacesController::class, 'summary']);
     Route::get('/log', [AttendacesController::class, 'attendanceLogs']);
 });
 

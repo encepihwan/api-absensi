@@ -13,6 +13,33 @@ use Illuminate\Validation\ValidationException;
 
 class AttendacesController extends Controller
 {
+    public function summary(Request $request)
+    {
+        try {
+            $data = [
+                "all" => 0,
+                "clockin" => 0,
+                "clockout" => 0,
+                "late" => 0,
+            ];
+
+            $attendance = Attendance::filterByField('projectId', $request->projectId)->filterByField('userId', auth()->user()->id);
+
+            $data['all'] = $attendance->count();
+            $data['clockin'] = $attendance->filterByField('type', 'clockin')->count();
+            $data['clockout'] = $attendance->filterByField('type', 'clockout')->count();
+            $data['late'] = $attendance->filterByField('status', 'late')->count();
+
+            return Json::response($data);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        }
+    }
+
     public function Attendances(Request $request)
     {
         try {
