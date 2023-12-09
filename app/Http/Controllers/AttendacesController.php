@@ -22,11 +22,14 @@ class AttendacesController extends Controller
                 "clockout" => 0,
                 "late" => 0,
             ];
+
             $user_id = auth()->user()->id;
-            $data['all'] = Attendance::filterByField('projectId', $request->projectId)->filterByField('userId', $user_id)->count();
-            $data['clockin'] = Attendance::filterByField('projectId', $request->projectId)->filterByField('userId', $user_id)->where('type', 'clockin')->count();
-            $data['clockout'] = Attendance::filterByField('projectId', $request->projectId)->filterByField('userId', $user_id)->where('type', 'clockout')->count();
-            $data['late'] = Attendance::filterByField('projectId', $request->projectId)->filterByField('userId', $user_id)->where('status', 'late')->count();
+            $projectId = $request->projectId;
+
+            $data['all'] = Attendance::where('projectId', $projectId)->where('userId', $user_id)->count();
+            $data['clockin'] = Attendance::where('projectId', $projectId)->where('userId', $user_id)->where('type', 'clockin')->count();
+            $data['clockout'] = Attendance::where('projectId', $projectId)->where('userId', $user_id)->where('type', 'clockout')->count();
+            $data['late'] = Attendance::where('projectId', $projectId)->where('userId', $user_id)->where('status', 'late')->count();
 
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
