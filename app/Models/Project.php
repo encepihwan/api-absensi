@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Http\Helpers\MethodsHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class Project extends Model
 {
