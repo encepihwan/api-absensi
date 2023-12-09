@@ -139,7 +139,7 @@ class ProjectController extends Controller
         try {
             $data = Project::findOrFail($id);
             $data->name = $request->input('name', $data->name);
-            $data->slug = Project::generateSlug($data->name);
+            $data->slug = Project::generateSlug($request->name);
             $data->startdate = $request->input('startdate', $data->startdate);
             $data->targetdate = $request->input('targetdate', $data->targetdate);
             $data->cost = $request->input('cost', $data->cost);
