@@ -35,6 +35,25 @@ class Project extends Model
 
     public function scopeGenerateSlug($query, $str)
     {
-        MethodsHelpers::generatedSlug($query, $str);
+        $new_slug = Str::slug($title);
+        $slug_check = $q->where('slug', $new_slug)->count();
+        if ($slug_check == 0) {
+            $slug = $new_slug;
+        } else {
+            $check = 0;
+            $unique = false;
+            while ($unique == false) {
+                $inc_id = ++$check;
+                $check = $q->where('slug', $new_slug . '-' . $inc_id)->count();
+                if ($check > 0) {
+                    $unique = false;
+                } else {
+                    $unique = true;
+                }
+            }
+            $slug = $new_slug . '-' . $inc_id;
+        }
+
+        return $slug;
     }
 }
