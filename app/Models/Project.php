@@ -34,7 +34,7 @@ class Project extends Model
         MethodsHelpers::entities($query, $entities);
     }
 
-    public function scopeGenerateSlug($query, $title)
+    public function scopeGenerateSlug($q, $title)
     {
         $new_slug = Str::slug($title);
         $slug_check = $q->where('slug', $new_slug)->count();
