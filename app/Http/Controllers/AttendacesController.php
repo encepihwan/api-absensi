@@ -26,9 +26,9 @@ class AttendacesController extends Controller
             $attendance = Attendance::filterByField('projectId', $request->projectId)->filterByField('userId', auth()->user()->id);
 
             $data['all'] = $attendance->count();
-            $data['clockin'] = $attendance->filterByField('type', 'clockin')->count();
-            $data['clockout'] = $attendance->filterByField('type', 'clockout')->count();
-            $data['late'] = $attendance->filterByField('status', 'late')->count();
+            $data['clockin'] = $attendance->where('type', 'clockin')->count();
+            $data['clockout'] = $attendance->where('type', 'clockout')->count();
+            $data['late'] = $attendance->where('status', 'late')->count();
 
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
