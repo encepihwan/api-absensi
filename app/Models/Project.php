@@ -32,4 +32,9 @@ class Project extends Model
     {
         MethodsHelpers::entities($query, $entities);
     }
+
+    public function scopeGenerateSlug($query, $str)
+    {
+        MethodsHelpers::generatedSlug($query, $str);
+    }
 }

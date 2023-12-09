@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Profile;
 use App\Models\Project;
 use App\Http\Helpers\Json;
+use App\Http\Helpers\MethodsHelpers;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -75,6 +76,8 @@ class ProjectController extends Controller
             }
 
             $data = new Project();
+            $data->name = $request->name;
+            $data->slug = Project::generatedSlug($data->name);
             $data->devisionId = $request->devisionId;
             $data->userId = $request->userId;
             $data->projectNo = $request->projectNo;
@@ -86,8 +89,6 @@ class ProjectController extends Controller
             $data->address = $request->address;
             $data->latitude = $request->latitude;
             $data->longtitude = $request->longtitude;
-            $data->name = $request->name;
-
             $data->save();
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -156,6 +157,7 @@ class ProjectController extends Controller
 
             $data = Project::findOrFail($id);
             $data->name = $request->input('name', $data->name);
+            $data->slug = Project::generatedSlug($data->name);
             $data->startdate = $request->input('startdate', $data->startdate);
             $data->targetdate = $request->input('targetdate', $data->targetdate);
             $data->cost = $request->input('cost', $data->cost);

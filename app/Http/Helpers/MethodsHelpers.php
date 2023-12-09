@@ -57,7 +57,7 @@ class MethodsHelpers
         return $query;
     }
 
-    public static function scopeGeneratedSlug($q, $title)
+    public static function generatedSlug($q, $title)
     {
         $new_slug = Str::slug($title);
         $slug_check = $q->where('slug', $new_slug)->count();
