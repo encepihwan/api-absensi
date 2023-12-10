@@ -114,7 +114,7 @@ class DevisionController extends Controller
                 'name' => 'required|string',
             ]);
             if ($validator->fails()) {
-                throw Json::exception($validator->errors());
+                return Json::exception($validator->errors());
             }
 
             $data = Devision::findOrFail($id);
