@@ -69,6 +69,7 @@ class ProjectController extends Controller
                 'latitude' => 'required|string',
                 'longtitude' => 'required|string',
                 'name' => 'required|string',
+                'desctiption' => 'required|string',
             ]);
 
             if ($validator->fails()) {
@@ -89,6 +90,7 @@ class ProjectController extends Controller
             $data->address = $request->address;
             $data->latitude = $request->latitude;
             $data->longtitude = $request->longtitude;
+            $data->description = $request->description;
             $data->save();
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -109,7 +111,7 @@ class ProjectController extends Controller
     public function show($id)
     {
         try {
-            $data = Project::where('id', $id)->first();
+            $data = Project::findOrFail($id);
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
@@ -148,6 +150,7 @@ class ProjectController extends Controller
             $data->address = $request->input('address', $data->address);
             $data->latitude = $request->input('latitude', $data->latitude);
             $data->longtitude = $request->input('longtitude', $data->longtitude);
+            $data->description = $request->input('description', $data->description);
             $data->save();
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
