@@ -58,6 +58,8 @@ class DevisionController extends Controller
 
             $data = new Devision();
             $data->name = $request->name;
+            $data->slug = Devision::generateSlug($request->name);
+            $data->description = $request->description;
             $data->save();
 
             return Json::response($data);
