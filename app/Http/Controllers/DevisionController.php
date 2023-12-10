@@ -109,10 +109,6 @@ class DevisionController extends Controller
     public function update(Request $request, $id)
     {
         try {
-
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string',
-            ]);
             if ($validator->fails()) {
                 return Json::exception($validator->errors());
             }
