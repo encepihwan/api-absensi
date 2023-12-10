@@ -109,10 +109,6 @@ class DevisionController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            if ($validator->fails()) {
-                return Json::exception($validator->errors());
-            }
-
             $data = Devision::findOrFail($id);
             $data->name = $request->input("name", $data->name);
             $data->slug = Devision::generateSlug($request->name);
