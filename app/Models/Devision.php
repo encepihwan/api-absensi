@@ -28,6 +28,11 @@ class Devision extends Model
         MethodsHelpers::filterByField($query, $record, $target);
     }
 
+    public function scopeEntities($query, $entities)
+    {
+        MethodsHelpers::entities($query, $entities);
+    }
+
     public function scopeGenerateSlug($q, $title)
     {
         $new_slug = Str::slug($title);
@@ -50,5 +55,10 @@ class Devision extends Model
         }
 
         return $slug;
+    }
+
+    public function users()
+    {
+        return $this->hasMany(UserHaveDivision::class, 'devision_id');
     }
 }

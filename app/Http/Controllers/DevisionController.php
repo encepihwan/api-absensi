@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Helpers\Json;
 use App\Models\Devision;
+use App\Models\UserHaveDivision;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
@@ -19,6 +21,7 @@ class DevisionController extends Controller
     {
         try {
             $data = Devision::filterByDateRange('created_at', $request->since, $request->until)
+                ->entities($request->entities)
                 ->paginate($request->input('paginate', 10));
 
             return Json::response($data);
@@ -49,12 +52,7 @@ class DevisionController extends Controller
     public function store(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'name' => 'required|string',
-            ]);
-            if ($validator->fails()) {
-                return Json::exception($validator->errors());
-            }
+            DB::beginTransaction();
 
             $data = new Devision();
             $data->name = $request->name;
@@ -62,12 +60,32 @@ class DevisionController extends Controller
             $data->description = $request->description;
             $data->save();
 
+            $userHaveDivision = new UserHaveDivision();
+            $userHaveDivision->user_id = auth()->user()->id;
+            $userHaveDivision->devision_id = $data->id;
+            $userHaveDivision->type = "owner";
+            $userHaveDivision->save();
+
+            $users = $request->usersIdsAssignTo;
+
+            foreach ($users as $key => $userId) {
+                $userAssign = new UserHaveDivision();
+                $userAssign->user_id = $userId;
+                $userAssign->devision_id = $data->id;
+                $userAssign->type = "assign";
+                $userAssign->save();
+            }
+
+            DB::commit();
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            DB::rollBack();
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
             return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         } catch (\ErrorException $e) {
+            DB::rollBack();
             return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }

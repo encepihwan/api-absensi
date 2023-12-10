@@ -8,6 +8,7 @@ use App\Http\Controllers\DevisionController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +62,10 @@ Route::group([
     //     Route::post('/destroy/{id}', [DevisionController::class, 'destroy']);
     //     // Route::apiResource('', DevisionController::class);
     // })->middleware(['auth:api']);
+});
+
+Route::prefix('user')->middleware('auth:api')->group(function () {
+    Route::post('/', [UserController::class, 'store']);
 });
 
 Route::prefix('devision')->middleware('auth:api')->group(function () {

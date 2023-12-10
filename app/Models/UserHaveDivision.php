@@ -8,4 +8,5 @@ use Illuminate\Database\Eloquent\Model;
 class UserHaveDivision extends Model
 {
     use HasFactory;
+    protected $table = 'user_have_division';
 }
