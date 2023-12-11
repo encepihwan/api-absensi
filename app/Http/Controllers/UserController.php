@@ -18,6 +18,8 @@ class UserController extends Controller
     {
         try {
             $user = User::get();
+
+            return Json::response($user);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         } catch (\Illuminate\Database\QueryException $e) {
