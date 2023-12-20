@@ -161,18 +161,18 @@ class AuthController extends Controller
         // return response()->json(['user' => $responseData]);
 
         $user = auth()->user();
-        $user->load('profile', 'role');
+        $user->load('profile', 'roles');
 
         $data = [
             'mediaId' => optional($user->profile)->mediaId,
             'jabatan' => optional($user->profile)->jabatan,
             'name' => $user->name,
-            'userName' => $user->name, 
+            'userName' => $user->name,
             'email' => $user->email,
             'url' => optional(optional($user->profile)->medias)->url,
             'role' => $user->role,
         ];
-        
+
         return Json::response($data);
     }
 

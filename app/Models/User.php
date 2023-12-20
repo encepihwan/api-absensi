@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Http\Helpers\MethodsHelpers;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
+use App\Models\RoleHasUser;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -36,9 +38,9 @@ class User extends Authenticatable implements JWTSubject
         'remember_token',
     ];
 
-    public function role()
+    public function roles()
     {
-        return $this->belongsToMany(Role::class, 'role_has_users', 'userId', 'roleId');
+        return $this->hasMany(RoleHasUser::class, 'userId');
     }
 
 
@@ -55,11 +57,18 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
-    public function getJWTIdentifier() {
+    public function getJWTIdentifier()
+    {
         return $this->getKey();
     }
 
-    public function getJWTCustomClaims() {
+    public function getJWTCustomClaims()
+    {
         return [];
-    }   
+    }
+
+    public function scopeEntities($query, $entities)
+    {
+        MethodsHelpers::entities($query, $entities);
+    }
 }
