@@ -96,6 +96,6 @@ Route::prefix("media")->middleware('auth:api')->group(function () {
 Route::prefix("profile")->middleware(['auth:api'])->group(function ($router) {
     Route::get('/', [AuthController::class, 'userProfile']);
     Route::get('/me', [ProfileController::class, 'me']);
-    Route::get('edit', [ProfileController::class, 'edit']);
+    Route::post('edit', [ProfileController::class, 'update']);
     Route::post('update/{id}', [ProfileController::class, 'update']);
 });

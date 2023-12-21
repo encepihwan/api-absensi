@@ -43,7 +43,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(RoleHasUser::class, 'userId');
     }
 
-
     public function profile()
     {
         return $this->hasOne(Profile::class, 'userId');

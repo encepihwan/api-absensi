@@ -52,65 +52,14 @@ class ProfileController extends Controller
     public function update(Request $request)
     {
         try {
-
-            $request->validate([
-                'pictures' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
-            ]);
-
-            $data = Profile::find($request->userId);
-
-            if ($data) {
-                $medias = null;
-
-                if ($data->mediaId) {
-                    $medias = Medias::find($data->mediaId);
-                }
-
-                $url = $medias ? $medias->url : null;
-
-                if ($request->pictures != null) {
-                    $image = $request->file('pictures');
-                    $imageName = time() . '.' . $image->getClientOriginalExtension();
-                    $image->move(public_path('profile'), $imageName);
-
-
-                    // Hapus gambar lama jika ada
-                    if ($data->pictures) {
-                        unlink(public_path('profile') . '/' . $data->pictures);
-                    }
-                    // Setel URL gambar baru
-                    $url = url('profile/' . $imageName);
-                } else {
-                    $url = $medias->url;
-                }
-
-                if ($medias) {
-                    $medias->update([
-                        'url' => $url,
-                        'type' => $medias->type
-                    ]);
-                } else {
-                    $medias = Medias::create([
-                        'url' => $url,
-                        'type' => 'profile'
-                    ]);
-                }
-
-                // dd($request->phoneNumber);
-                $data->update([
-                    'phoneNumber' => "687567567",
-                    'userId' => $request->userId,
-                    'jabatan' => $request->jabatan,
-                    'name' => $request->name,
-                    'mediaId' => $medias->id,
-                    'gender' => $request->gender,
-                    'address' => $request->address,
-                ]);
-
-                return Json::response($data);
-            } else {
-                return Json::exception($message = 'Data tidak ditemukan');
-            }
+            $data = Profile::where('userId', auth()->user()->id)->first();
+            $data->mediaId = $request->input('media_id', $data->mediaId);
+            $data->jabatan = $request->input('jabatan', $data->jabatan);
+            $data->gender = $request->input('gender', $data->gender);
+            $data->address = $request->input('address', $data->address);
+            $data->phoneNumber = $request->input('phoneNumber', $data->phoneNumber);
+            $data->save();
+            return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             DB::rollBack();
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
