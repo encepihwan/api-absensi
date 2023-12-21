@@ -33,12 +33,6 @@ Route::group([
         Route::post('/change-password', [AuthController::class, 'changePassword']);
     });
 
-    $router->group(['prefix' => 'profile'], function ($router) {
-        Route::get('/', [AuthController::class, 'userProfile']);
-        Route::get('edit', [ProfileController::class, 'edit']);
-        Route::post('update/{id}', [ProfileController::class, 'update']);
-    });
-
     $router->group(['prefix' => 'attendances'], function ($router) {
         Route::post('/', [AttendacesController::class, 'Attendances']);
     });
@@ -97,4 +91,11 @@ Route::prefix('attendance')->middleware('auth:api')->group(function () {
 
 Route::prefix("media")->middleware('auth:api')->group(function () {
     Route::post('/', [MediaController::class, 'store']);
+});
+
+Route::prefix("profile")->middleware(['auth:api'])->group(function ($router) {
+    Route::get('/', [AuthController::class, 'userProfile']);
+    Route::get('/me', [ProfileController::class, 'me']);
+    Route::get('edit', [ProfileController::class, 'edit']);
+    Route::post('update/{id}', [ProfileController::class, 'update']);
 });

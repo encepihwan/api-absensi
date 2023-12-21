@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Helpers\Json;
 use App\Models\Profile;
 use App\Models\Medias;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
@@ -13,11 +14,22 @@ use function PHPSTORM_META\type;
 
 class ProfileController extends Controller
 {
-    public function __construct()
+    public function me(Request $request)
     {
-        $this->middleware('auth:api');
-    }
+        try {
+            $user = auth()->user();
 
+            $me = User::entities($request->entities)
+                ->findOrFail($user->id);
+            return Json::response($me);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        }
+    }
     public function edit(Request $request)
     {
         try {
@@ -45,7 +57,7 @@ class ProfileController extends Controller
                 'pictures' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar
             ]);
 
-            $data = Profile::find($request->userId);        
+            $data = Profile::find($request->userId);
 
             if ($data) {
                 $medias = null;
@@ -61,7 +73,7 @@ class ProfileController extends Controller
                     $imageName = time() . '.' . $image->getClientOriginalExtension();
                     $image->move(public_path('profile'), $imageName);
 
-            
+
                     // Hapus gambar lama jika ada
                     if ($data->pictures) {
                         unlink(public_path('profile') . '/' . $data->pictures);
@@ -77,7 +89,7 @@ class ProfileController extends Controller
                         'url' => $url,
                         'type' => $medias->type
                     ]);
-                }else{
+                } else {
                     $medias = Medias::create([
                         'url' => $url,
                         'type' => 'profile'
