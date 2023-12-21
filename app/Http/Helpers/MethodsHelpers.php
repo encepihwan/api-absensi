@@ -4,9 +4,22 @@ namespace App\Http\Helpers;
 
 use Illuminate\Support\Str;
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Http;
 
 class MethodsHelpers
 {
+    public static function post($endpoint, $data = [])
+    {
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Client-ID cb8c5d9613f3073',
+            ])->post($endpoint, $data);
+            $res = json_decode($response->getBody(), true);
+            return $res;
+        } catch (RequestException $e) {
+            return response()->json(['error' => 'Terjadi masalah dengan permintaan HTTP'], 500);
+        }
+    }
     public static function order($query, $order)
     {
         if ($order === '-id') {

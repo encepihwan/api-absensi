@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Helpers\Json;
 use App\Models\Medias;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class MediaController extends Controller
 {
@@ -46,27 +47,57 @@ class MediaController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            // $validator = [];
+        $clientId = 'cb8c5d9613f3073'; // Ganti dengan client ID Imgur Anda
 
-            // 'mediaAttendaceId' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            // 'attendances' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-            $attendancesImage = $this->saveImage($request->file('media'), 'media');
+        // Mendapatkan file gambar dari permintaan dengan menggunakan method file('nama_field')
+        $imageFile = $request->file('media');
 
-            $media = new Medias();
-            $media->url = $attendancesImage;
-            $media->type = $request->type;
-            $media->save();
+        // Mengecek apakah file ada dan valid
+        if ($imageFile) {
+            // Menyiapkan data untuk dikirimkan
+            $formData = [
+                'headers' => [
+                    'Authorization' => 'Client-ID ' . $clientId,
+                ],
+                'multipart' => [
+                    [
+                        'name' => 'image',
+                        'contents' => fopen($imageFile->getRealPath(), 'r'),
+                    ],
+                ],
+            ];
 
-            return Json::response($media);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
-        } catch (\Illuminate\Database\QueryException $e) {
-            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
-        } catch (\ErrorException $e) {
-            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+            // Menggunakan Laravel HTTP client untuk melakukan permintaan POST
+            $client = new \GuzzleHttp\Client();
+            try {
+                $response = $client->post('https://api.imgur.com/3/upload', $formData);
+
+                // Mengambil respon dari Imgur
+                $responseData = json_decode($response->getBody(), true);
+
+                // Memeriksa respon
+                if ($response->getStatusCode() === 200 && isset($responseData['data']['link'])) {
+                    // Jika Imgur memberikan URL, Anda dapat menanganinya di sini
+                    $imgurUrl = $responseData['data']['link'];
+                    $media = new Medias();
+                    $media->url = $imgurUrl;
+                    $media->type = $request->type;
+                    $media->save();
+                    return Json::response($media);
+                } else {
+                    // Jika terdapat masalah dengan respons dari Imgur
+                    return response()->json(['error' => 'Gagal mengunggah file ke Imgur.'], 400);
+                }
+            } catch (\GuzzleHttp\Exception\ClientException $e) {
+                // Tangkap kesalahan dari Guzzle
+                return response()->json(['error' => $e->getResponse()->getBody()->getContents()], $e->getCode());
+            }
+        } else {
+            // Jika tidak ada file yang dikirimkan
+            return response()->json(['error' => 'Tidak ada file yang dikirimkan.'], 400);
         }
     }
+
 
     private function saveImage($file, $type)
     {
