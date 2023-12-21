@@ -47,7 +47,7 @@ class MediaController extends Controller
      */
     public function store(Request $request)
     {
-        $clientId = 'cb8c5d9613f3073'; // Ganti dengan client ID Imgur Anda
+        $clientId = env('IMGURL_CLINT_ID', 'd265582eabf8d3d'); // Ganti dengan client ID Imgur Anda
 
         // Mendapatkan file gambar dari permintaan dengan menggunakan method file('nama_field')
         $imageFile = $request->file('media');
