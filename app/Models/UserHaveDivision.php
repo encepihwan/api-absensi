@@ -9,4 +9,9 @@ class UserHaveDivision extends Model
 {
     use HasFactory;
     protected $table = 'user_have_division';
+
+    public function division()
+    {
+        return $this->belongsTo(Devision::class, 'devision_id');
+    }
 }

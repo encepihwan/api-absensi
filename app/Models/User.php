@@ -38,15 +38,6 @@ class User extends Authenticatable implements JWTSubject
         'remember_token',
     ];
 
-    public function roles()
-    {
-        return $this->hasMany(RoleHasUser::class, 'userId');
-    }
-
-    public function profile()
-    {
-        return $this->hasOne(Profile::class, 'userId');
-    }
     /**
      * The attributes that should be cast.
      *
@@ -69,5 +60,20 @@ class User extends Authenticatable implements JWTSubject
     public function scopeEntities($query, $entities)
     {
         MethodsHelpers::entities($query, $entities);
+    }
+
+    public function roles()
+    {
+        return $this->hasMany(RoleHasUser::class, 'userId');
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(Profile::class, 'userId');
+    }
+
+    public function Divisions()
+    {
+        return $this->hasMany(UserHaveDivision::class, 'user_id');
     }
 }
