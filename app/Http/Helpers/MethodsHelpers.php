@@ -96,12 +96,15 @@ class MethodsHelpers
 
     public static function whereWithEntities($query, $entities, $field, $target)
     {
-        if ($entities && $field) {
+        if ($entities && $field && $target) {
             $query->whereHas($entities, function ($queryBuilder) use ($field, $target) {
-                $queryBuilder->where($target, $field);
+                if ($field && $target) {
+                    $queryBuilder->where($target, $field);
+                }
+
+                return $queryBuilder;
             });
         }
-
         return $query;
     }
 

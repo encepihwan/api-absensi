@@ -25,6 +25,7 @@ class ProjectController extends Controller
         try {
             $project = Project::filterByField('devisionId', $request->division_id)
                 ->entities($request->entities)
+                ->whereWithEntities('users', $request->owner_id, 'user_id')
                 ->filterByField('status', $request->status)
                 ->paginate($request->input('paginate', 10));
 

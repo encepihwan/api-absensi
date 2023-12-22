@@ -34,6 +34,16 @@ class Project extends Model
         MethodsHelpers::entities($query, $entities);
     }
 
+    public function scopeWhereWithEntities($query, $entities, $field, $target)
+    {
+        MethodsHelpers::whereWithEntities($query, $entities, $field, $target);
+    }
+
+    public function users()
+    {
+        return $this->hasMany(UserHaveProject::class, 'project_id');
+    }
+
     public function scopeGenerateSlug($q, $title)
     {
         $new_slug = Str::slug($title);
