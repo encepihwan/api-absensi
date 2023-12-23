@@ -62,6 +62,7 @@ class UserController extends Controller
             $user->username = $request->username;
             $user->email = $request->email;
             $user->password = bcrypt($request->password);
+            $user->profile_nik = $request->profile_nik;
             $user->status = 'draft';
 
             foreach ($roleIds as $key => $roleId) {
@@ -122,6 +123,7 @@ class UserController extends Controller
             $user->name = $request->input('name', $user->name);
             $user->email = $request->input('email', $user->email);
             $user->status = $request->input('status', $user->status);
+            $user->profile_nik = $request->input('profile_nik', $user->profile_nik);
             $user->save();
 
             return Json::response($user);
