@@ -8,6 +8,7 @@ use App\Http\Controllers\DevisionController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 
 /*
@@ -93,9 +94,13 @@ Route::prefix("media")->middleware('auth:api')->group(function () {
     Route::post('/', [MediaController::class, 'store']);
 });
 
-Route::prefix("profile")->middleware(['auth:api'])->group(function ($router) {
+Route::prefix("profile")->middleware(['auth:api'])->group(function () {
     Route::get('/', [AuthController::class, 'userProfile']);
     Route::get('/me', [ProfileController::class, 'me']);
     Route::post('edit', [ProfileController::class, 'update']);
     Route::post('update/{id}', [ProfileController::class, 'update']);
+});
+
+Route::prefix('roles')->middleware(['auth:api'])->group(function () {
+    Route::get('/', [RoleController::class, 'index']);
 });

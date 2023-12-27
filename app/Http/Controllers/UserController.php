@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Helpers\Json;
+use App\Models\RoleHasUser;
 use App\Models\User;
 use App\Models\UserHaveRoles;
 use Illuminate\Http\Request;
@@ -64,14 +65,17 @@ class UserController extends Controller
             $user->password = bcrypt($request->password);
             $user->profile_nik = $request->profile_nik;
             $user->status = 'draft';
+            $roleIds = $request->role_ids;
+            $user->save();
 
             foreach ($roleIds as $key => $roleId) {
-                $userHaveRole = new UserHaveRoles();
-                $userHaveRole->user_id = $user->id;
-                $userHaveRole->role_id = $roleId;
+                $userHaveRole = new RoleHasUser();
+                $userHaveRole->userId = $user->id;
+                $userHaveRole->roleId = $roleId;
                 $userHaveRole->save();
             }
-            $user->save();
+
+            $user->roles;
 
             DB::commit();
             return Json::response($user);

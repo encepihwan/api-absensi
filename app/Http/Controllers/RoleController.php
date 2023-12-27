@@ -14,23 +14,15 @@ class RoleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function __construct()
-    {
-        $this->middleware('auth:api');
-    }
-
     public function index(Request $request)
     {
         try {
-            
-            if (isset($request->limit)) {
-                $data = $this->filter($request);
-            } else {
-                $data = Role::all();
+
+            $data = Role::paginate($request->input('paginate', 10));
+            if ($request->type === 'selected') {
+                $data = Role::get();
             }
-
             return Json::response($data);
-
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         } catch (\Illuminate\Database\QueryException $e) {

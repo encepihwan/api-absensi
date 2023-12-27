@@ -58,6 +58,7 @@ class DevisionController extends Controller
             $data->name = $request->name;
             $data->slug = Devision::generateSlug($request->name);
             $data->description = $request->description;
+            $data->status = 'draft';
             $data->save();
 
             $userHaveDivision = new UserHaveDivision();
