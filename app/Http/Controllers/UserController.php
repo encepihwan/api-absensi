@@ -6,6 +6,7 @@ use App\Http\Helpers\Json;
 use App\Models\RoleHasUser;
 use App\Models\User;
 use App\Models\UserHaveRoles;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -20,7 +21,9 @@ class UserController extends Controller
     public function index(Request $request)
     {
         try {
-            $user = User::entities($request->entities)->get();
+            $user = User::entities($request->entities)
+                ->filterSummary($request->summary)
+                ->paginate($request->input('paginate', 10));
 
             return Json::response($user);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -37,9 +40,43 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function summary(Request $request)
     {
-        //
+        // try {
+        $summary = [
+            'all' => 0,
+            'active' => 0,
+            'not_active' => 0,
+            'superadmin' => 0,
+            'user' => 0,
+            'admin' => 0,
+            'supervisor' => 0,
+        ];
+
+        $summary['all'] = User::count();
+        $summary['active'] = User::where('status', 'active')->count();
+        $summary['not_active'] = User::where('status', 'not_active')->count();
+        $summary['superadmin'] = User::whereHas('roles', function (Builder $query) {
+            $query->where('roleId', 1);
+        })->count();
+        $summary['user'] = User::whereHas('roles', function (Builder $query) {
+            $query->where('roleId', 2);
+        })->count();
+        $summary['admin'] = User::whereHas('roles', function (Builder $query) {
+            $query->where('roleId', 3);
+        })->count();
+        $summary['supervisor'] = User::whereHas('roles', function (Builder $query) {
+            $query->where('roleId', 4);
+        })->count();
+
+        return Json::response($summary);
+        // } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        //     return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        // } catch (\Illuminate\Database\QueryException $e) {
+        //     return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        // } catch (\ErrorException $e) {
+        //     return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        // }
     }
 
     /**
@@ -64,7 +101,7 @@ class UserController extends Controller
             $user->email = $request->email;
             $user->password = bcrypt($request->password);
             $user->profile_nik = $request->profile_nik;
-            $user->status = 'draft';
+            $user->status = 'not_active';
             $roleIds = $request->role_ids;
             $user->save();
 

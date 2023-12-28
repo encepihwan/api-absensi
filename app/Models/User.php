@@ -10,6 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Models\RoleHasUser;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -75,5 +76,27 @@ class User extends Authenticatable implements JWTSubject
     public function Divisions()
     {
         return $this->hasMany(UserHaveDivision::class, 'user_id');
+    }
+
+    public function scopeFilterSummary($query, $summary)
+    {
+        if ($query && $summary) {
+            if ($summary && $summary !== 'all') {
+                if ($summary === 'active' || $summary === 'not_active') {
+                    $query->where('status', $summary);
+                } else {
+                    $roles = ['superadmin', 'user', 'admin', 'supervisor'];
+                    $index = array_search($summary, $roles);
+
+                    $query->whereHas('roles', function (Builder $query) use ($index) {
+                        if (isset($index)) {
+                            $query->where('roleId', $index + 1);
+                        }
+                    });
+                }
+            }
+
+            return $query;
+        }
     }
 }

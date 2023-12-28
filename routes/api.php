@@ -61,6 +61,7 @@ Route::group([
 
 Route::prefix('user')->middleware('auth:api')->group(function () {
     Route::get('/', [UserController::class, 'index']);
+    Route::get('summary', [UserController::class, 'summary']);
     Route::post('/', [UserController::class, 'store']);
 });
 

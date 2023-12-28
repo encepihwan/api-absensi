@@ -45,7 +45,7 @@ class MediaController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store2(Request $request)
     {
         $clientId = env('IMGURL_CLINT_ID', 'd265582eabf8d3d'); // Ganti dengan client ID Imgur Anda
 
@@ -95,6 +95,25 @@ class MediaController extends Controller
         } else {
             // Jika tidak ada file yang dikirimkan
             return response()->json(['error' => 'Tidak ada file yang dikirimkan.'], 400);
+        }
+    }
+
+    public function store(Request $request)
+    {
+        try {
+            $attendancesImage = $this->saveImage($request->file('media'), 'media');
+            $media = new Medias();
+            $media->url = $attendancesImage;
+            $media->type = $request->type;
+            $media->save();
+
+            return Json::response($media);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
 
