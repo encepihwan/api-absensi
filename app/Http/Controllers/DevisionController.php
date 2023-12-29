@@ -132,6 +132,7 @@ class DevisionController extends Controller
             $data->name = $request->input("name", $data->name);
             $data->slug = Devision::generateSlug($request->name);
             $data->description = $request->input('description', $data->description);
+            $data->status = $request->input('status', $data->status);
             $data->save();
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {

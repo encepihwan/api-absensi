@@ -14,4 +14,9 @@ class UserHaveDivision extends Model
     {
         return $this->belongsTo(Devision::class, 'devision_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

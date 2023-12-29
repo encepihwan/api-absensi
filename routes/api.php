@@ -69,7 +69,7 @@ Route::prefix('devision')->middleware('auth:api')->group(function () {
     Route::get('/', [DevisionController::class, 'index']);
     Route::post('/store', [DevisionController::class, 'store']);
     Route::get('/show/{id}', [DevisionController::class, 'show']);
-    Route::post('/update/{id}', [DevisionController::class, 'update']);
+    Route::put('/update/{id}', [DevisionController::class, 'update']);
     Route::post('/destroy/{id}', [DevisionController::class, 'destroy']);
     // Route::apiResource('', DevisionController::class);
 });
