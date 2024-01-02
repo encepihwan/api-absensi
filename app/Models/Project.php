@@ -44,6 +44,11 @@ class Project extends Model
         return $this->hasMany(UserHaveProject::class, 'project_id');
     }
 
+    public function division()
+    {
+        return $this->belongsTo(Devision::class, 'devisionId');
+    }
+
     public function scopeGenerateSlug($q, $title)
     {
         $new_slug = Str::slug($title);
