@@ -36,7 +36,7 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         // Cek apakah email sudah terdaftar
-        $user = User::where('email', $credentials['email'])->first();
+        $user = User::where('email', $credentials['email'])->entities('roles.role')->first();
         if (!$user) {
             return response()->json(['error' => 'Email not registered'], 401);
         }
@@ -48,7 +48,12 @@ class AuthController extends Controller
 
         $token = auth()->attempt($credentials);
 
-        return $this->createNewToken($token);
+        $data = [
+            'token' => $token,
+            'user' => $user
+        ];
+
+        return $this->createNewToken($data);
     }
 
     public function register(Request $request)

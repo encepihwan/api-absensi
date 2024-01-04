@@ -35,6 +35,19 @@ class UserController extends Controller
         }
     }
 
+    public function userSelectionList(Request $request)
+    {
+        // try {
+        $user = User::whereHas('divisions', function ($query) {
+            $query->where('devision_id', null);
+        })->get();
+
+        return Json::response($user);
+        // } catch (\Throwable $th) {
+        //     //throw $th;
+        // }
+    }
+
     /**
      * Show the form for creating a new resource.
      *
