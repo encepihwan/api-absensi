@@ -22,6 +22,7 @@ class DevisionController extends Controller
         try {
             $data = Devision::filterByDateRange('created_at', $request->since, $request->until)
                 ->entities($request->entities)
+                ->whereDivisions($request->division_ids)
                 ->paginate($request->input('paginate', 10));
 
             return Json::response($data);

@@ -33,6 +33,11 @@ class Devision extends Model
         MethodsHelpers::entities($query, $entities);
     }
 
+    public function scopeWhereDivisions($query, $divisions)
+    {
+        MethodsHelpers::whereInArray($query, 'id', $divisions);
+    }
+
     public function scopeGenerateSlug($q, $title)
     {
         $new_slug = Str::slug($title);

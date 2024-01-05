@@ -108,6 +108,15 @@ class MethodsHelpers
         return $query;
     }
 
+    public static function whereInArray($query, $record, $values)
+    {
+        if ($query && $values && $record) {
+            $query->whereIn($record, $values);
+        }
+
+        return $query;
+    }
+
     public static function whereWithSummary($query, $target, $summary)
     {
         if ($summary && $target) {

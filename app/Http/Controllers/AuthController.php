@@ -36,7 +36,7 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         // Cek apakah email sudah terdaftar
-        $user = User::where('email', $credentials['email'])->entities('roles.role')->first();
+        $user = User::where('email', $credentials['email'])->entities('roles.role,profile.medias,divisions.division')->first();
         if (!$user) {
             return response()->json(['error' => 'Email not registered'], 401);
         }

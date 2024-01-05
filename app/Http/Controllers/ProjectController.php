@@ -7,6 +7,7 @@ use App\Models\Project;
 use App\Http\Helpers\Json;
 use App\Http\Helpers\MethodsHelpers;
 use App\Models\Attendance;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -25,6 +26,7 @@ class ProjectController extends Controller
         try {
             $project = Project::filterByField('devisionId', $request->division_id)
                 ->entities($request->entities)
+                ->whereDivisions($request->division_ids)
                 ->whereWithEntities('users', $request->owner_id, 'user_id')
                 ->filterByField('status', $request->status)
                 ->paginate($request->input('paginate', 10));

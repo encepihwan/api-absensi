@@ -73,9 +73,18 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(Profile::class, 'userId');
     }
 
-    public function Divisions()
+    public function divisions()
     {
         return $this->hasMany(UserHaveDivision::class, 'user_id');
+    }
+
+    public function scopeWhereDivisions($query, $divisionIds)
+    {
+        if ($query && $divisionIds) {
+            $query->whereHas('divisions', function ($q) use ($divisionIds) {
+                $q->whereIn('devision_id', $divisionIds);
+            });
+        }
     }
 
     public function scopeFilterSummary($query, $summary)

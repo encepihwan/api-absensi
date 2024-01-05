@@ -60,14 +60,14 @@ Route::group([
 });
 
 Route::prefix('user')->middleware('auth:api')->group(function () {
-    Route::get('/', [UserController::class, 'index']);
+    Route::post('/all', [UserController::class, 'index']);
     Route::post('/', [UserController::class, 'store']);
     Route::get('/selected', [UserController::class, 'userSelectionList']);
     Route::get('summary', [UserController::class, 'summary']);
 });
 
 Route::prefix('devision')->middleware('auth:api')->group(function () {
-    Route::get('/', [DevisionController::class, 'index']);
+    Route::post('/', [DevisionController::class, 'index']);
     Route::post('/store', [DevisionController::class, 'store']);
     Route::get('/show/{id}', [DevisionController::class, 'show']);
     Route::put('/update/{id}', [DevisionController::class, 'update']);
@@ -76,7 +76,7 @@ Route::prefix('devision')->middleware('auth:api')->group(function () {
 });
 
 Route::prefix('project')->middleware('auth:api')->group(function () {
-    Route::get('/', [ProjectController::class, 'index']);
+    Route::post('/', [ProjectController::class, 'index']);
     Route::post('/store', [ProjectController::class, 'store']);
     Route::get('/show/{id}', [ProjectController::class, 'show']);
     Route::post('/update/{id}', [ProjectController::class, 'update']);

@@ -49,6 +49,11 @@ class Project extends Model
         return $this->belongsTo(Devision::class, 'devisionId');
     }
 
+    public function scopeWhereDivisions($query, $divisions)
+    {
+        MethodsHelpers::whereInArray($query, 'devisionId', $divisions);
+    }
+
     public function scopeGenerateSlug($q, $title)
     {
         $new_slug = Str::slug($title);

@@ -22,6 +22,7 @@ class UserController extends Controller
     {
         try {
             $user = User::entities($request->entities)
+                ->whereDivisions($request->division_ids)
                 ->filterSummary($request->summary)
                 ->paginate($request->input('paginate', 10));
 
