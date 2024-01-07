@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Helpers\Json;
 use App\Models\RoleHasUser;
 use App\Models\User;
+use App\Models\UserHaveDivision;
 use App\Models\UserHaveRoles;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -38,15 +39,22 @@ class UserController extends Controller
 
     public function userSelectionList(Request $request)
     {
-        // try {
-        $user = User::whereHas('divisions', function ($query) {
-            $query->where('devision_id', null);
-        })->get();
+        try {
+            $user = User::whereDivisions($request->division_ids)
+                ->whereHas('roles.role', function ($query) {
+                    $query->where('name', '!=', 'superadmin');
+                })
+                ->entities($request->entities)
+                ->get();
 
-        return Json::response($user);
-        // } catch (\Throwable $th) {
-        //     //throw $th;
-        // }
+            return Json::response($user);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        }
     }
 
     /**
@@ -124,6 +132,17 @@ class UserController extends Controller
                 $userHaveRole->userId = $user->id;
                 $userHaveRole->roleId = $roleId;
                 $userHaveRole->save();
+            }
+
+            $divisionIds = $request->division_ids;
+            if (isset($divisionIds)) {
+                foreach ($divisionIds as $key => $divisionId) {
+                    $userHaveDivisions  = new UserHaveDivision();
+                    $userHaveDivisions->user_id = $user->id;
+                    $userHaveDivisions->devision_id = $divisionId;
+                    $userHaveDivisions->type = 'assign';
+                    $userHaveDivisions->save();
+                }
             }
 
             $user->roles;

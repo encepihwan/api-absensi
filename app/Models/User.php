@@ -87,6 +87,11 @@ class User extends Authenticatable implements JWTSubject
         }
     }
 
+    public function scopeWhereInArray($query, $record, $values)
+    {
+        MethodsHelpers::whereInArray($query, $record, $values);
+    }
+
     public function scopeFilterSummary($query, $summary)
     {
         if ($query && $summary) {

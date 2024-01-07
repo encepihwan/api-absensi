@@ -6,6 +6,7 @@ use App\Http\Helpers\MethodsHelpers;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use PhpParser\Node\Stmt\Static_;
 
 class Project extends Model
 {

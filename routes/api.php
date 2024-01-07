@@ -62,7 +62,7 @@ Route::group([
 Route::prefix('user')->middleware('auth:api')->group(function () {
     Route::post('/all', [UserController::class, 'index']);
     Route::post('/', [UserController::class, 'store']);
-    Route::get('/selected', [UserController::class, 'userSelectionList']);
+    Route::post('/selected', [UserController::class, 'userSelectionList']);
     Route::get('summary', [UserController::class, 'summary']);
 });
 
@@ -79,7 +79,7 @@ Route::prefix('project')->middleware('auth:api')->group(function () {
     Route::post('/', [ProjectController::class, 'index']);
     Route::post('/store', [ProjectController::class, 'store']);
     Route::get('/show/{id}', [ProjectController::class, 'show']);
-    Route::post('/update/{id}', [ProjectController::class, 'update']);
+    Route::put('/update/{id}', [ProjectController::class, 'update']);
     Route::post('/destroy/{id}', [ProjectController::class, 'destroy']);
 
     Route::get('/global', [ProjectController::class, 'global_function']);

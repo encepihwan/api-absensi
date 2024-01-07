@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\UserHaveProject as UserProject;
 use App\Models\Profile;
 use App\Models\Project;
 use App\Http\Helpers\Json;
@@ -58,51 +59,45 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $validator = Validator::make($request->all(), [
-                'devisionId' => 'required|integer',
-                'userId' => 'required|integer',
-                'projectNo' => 'required|string',
-                'startdate' => 'required|date',
-                'targetdate' => 'required|date',
-                'cost' => 'required|integer',
-                'status' => 'required|string',
-                'rowStatus' => 'required|boolean',
-                'address' => 'required|string',
-                'latitude' => 'required|string',
-                'longtitude' => 'required|string',
-                'name' => 'required|string',
-                'desctiption' => 'required|string',
-            ]);
+        // try {
+        DB::beginTransaction();
+        $data = new Project();
+        $data->name = $request->name;
+        $data->slug = Project::generateSlug($request->name);
+        $data->devisionId = $request->devisionId;
+        $data->userId = auth()->user()->id;
+        $data->projectNo = $request->projectNo;
+        $data->startdate = $request->startdate;
+        $data->targetdate = $request->targetdate;
+        $data->cost = $request->cost;
+        $data->status = 'draft';
+        $data->rowStatus = false;
+        $data->address = $request->address;
+        $data->latitude = $request->latitude;
+        $data->longtitude = $request->longitude;
+        $data->description = $request->description;
+        $data->save();
 
-            if ($validator->fails()) {
-                return Json::response($validator->errors()->toJson(), 400);
-            }
-
-            $data = new Project();
-            $data->name = $request->name;
-            $data->slug = Project::generatedSlug($data->name);
-            $data->devisionId = $request->devisionId;
-            $data->userId = $request->userId;
-            $data->projectNo = $request->projectNo;
-            $data->startdate = $request->startdate;
-            $data->targetdate = $request->targetdate;
-            $data->cost = $request->cost;
-            $data->status = $request->status;
-            $data->rowStatus = $request->rowStatus;
-            $data->address = $request->address;
-            $data->latitude = $request->latitude;
-            $data->longtitude = $request->longtitude;
-            $data->description = $request->description;
-            $data->save();
-            return Json::response($data);
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
-        } catch (\Illuminate\Database\QueryException $e) {
-            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
-        } catch (\ErrorException $e) {
-            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        $userIds = $request->user_ids;
+        foreach ($userIds as $key => $userId) {
+            $userHaveProject = new UserProject();
+            $userHaveProject->user_id = $userId;
+            $userHaveProject->project_id = $data->id;
+            $userHaveProject->type = 'assign';
+            $userHaveProject->save();
         }
+        DB::commit();
+        return Json::response($data);
+        // } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        //     DB::rollBack();
+        //     return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        // } catch (\Illuminate\Database\QueryException $e) {
+        //     DB::rollBack();
+        //     return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        // } catch (\ErrorException $e) {
+        //     DB::rollBack();
+        //     return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        // }
     }
 
     /**

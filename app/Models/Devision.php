@@ -38,6 +38,17 @@ class Devision extends Model
         MethodsHelpers::whereInArray($query, 'id', $divisions);
     }
 
+    public function scopeExecuteType($query, $type, $paginate = null)
+    {
+        if ($query && $type) {
+            if ($type === 'selected') {
+                return $query->get();
+            }
+        }
+
+        return $query->paginate($paginate);
+    }
+
     public function scopeGenerateSlug($q, $title)
     {
         $new_slug = Str::slug($title);

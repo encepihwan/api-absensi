@@ -23,7 +23,7 @@ class DevisionController extends Controller
             $data = Devision::filterByDateRange('created_at', $request->since, $request->until)
                 ->entities($request->entities)
                 ->whereDivisions($request->division_ids)
-                ->paginate($request->input('paginate', 10));
+                ->executeType($request->typeGet, 10);
 
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
