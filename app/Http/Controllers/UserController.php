@@ -11,6 +11,9 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Mail;
+use App\Mail\SendMail;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -115,13 +118,17 @@ class UserController extends Controller
                 "name" => "required|string",
                 "username" => "required|string|unique:users,username",
                 "email" => "required|string|unique:users,email",
-                "password" => "required|string"
+                // "password" => "required|string"
             ]);
+            //generate password random 6 charapter
+            $password = Str::random(6);
+
             $user = new User();
             $user->name = $request->name;
             $user->username = $request->username;
             $user->email = $request->email;
-            $user->password = bcrypt($request->password);
+            //$user->password = bcrypt($request->password);
+            $user->password = bcrypt($password);
             $user->profile_nik = $request->profile_nik;
             $user->status = 'not_active';
             $roleIds = $request->role_ids;
@@ -144,6 +151,12 @@ class UserController extends Controller
                     $userHaveDivisions->save();
                 }
             }
+
+            $mailData = [
+                'password' => $password
+            ];
+    
+            Mail::to($request->email)->send(new SendMail($mailData));
 
             $user->roles;
 
