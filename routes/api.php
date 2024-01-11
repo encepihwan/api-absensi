@@ -10,6 +10,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserHaveProjectController;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,4 +106,9 @@ Route::prefix("profile")->middleware(['auth:api'])->group(function () {
 
 Route::prefix('roles')->middleware(['auth:api'])->group(function () {
     Route::get('/', [RoleController::class, 'index']);
+});
+
+Route::prefix('user-project')->middleware(['auth:api'])->group(function () {
+    Route::post('/', [UserHaveProjectController::class, 'insertUserAssign']);
+    Route::delete('/{id}', [UserHaveProjectController::class, 'deleteUserAssign']);
 });

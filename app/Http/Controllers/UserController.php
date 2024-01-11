@@ -44,10 +44,11 @@ class UserController extends Controller
     {
         try {
             $user = User::whereDivisions($request->division_ids)
-                ->whereHas('roles.role', function ($query) {
-                    $query->where('name', '!=', 'superadmin');
-                })
+                ->whereRoles($request->roleIds)
                 ->entities($request->entities)
+                ->whereProjects($request->project_ids)
+                ->whereHasNotProject($request->not_have_this_projects)
+                ->whereHasNotDivisions($request->not_have_divisions)
                 ->get();
 
             return Json::response($user);
@@ -155,7 +156,7 @@ class UserController extends Controller
             $mailData = [
                 'password' => $password
             ];
-    
+
             Mail::to($request->email)->send(new SendMail($mailData));
 
             $user->roles;

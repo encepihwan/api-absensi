@@ -68,6 +68,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(RoleHasUser::class, 'userId');
     }
 
+    public function projects()
+    {
+        return $this->hasMany(UserHaveProject::class, 'user_id');
+    }
+
     public function profile()
     {
         return $this->hasOne(Profile::class, 'userId');
@@ -81,15 +86,78 @@ class User extends Authenticatable implements JWTSubject
     public function scopeWhereDivisions($query, $divisionIds)
     {
         if ($query && $divisionIds) {
+            $divisionIds = array_filter($divisionIds, function ($value) {
+                return $value !== null;
+            });
             $query->whereHas('divisions', function ($q) use ($divisionIds) {
                 $q->whereIn('devision_id', $divisionIds);
             });
         }
+
+        return $query;
     }
+
+    public function scopeWhereProjects($query, $projectIds)
+    {
+
+        if ($query && $projectIds) {
+            $projectIds = array_filter($projectIds, function ($value) {
+                return $value !== null;
+            });
+            $query->whereHas('projects', function ($q) use ($projectIds) {
+                $q->whereIn('project_id', $projectIds);
+            });
+        }
+
+        return $query;
+    }
+
+    public function scopeWhereHasNotDivisions($query, $divisionIds)
+    {
+        // Memeriksa apakah $projectIds tidak kosong dan $query terdefinisi
+        if ($divisionIds && $query) {
+            $projectIds = array_filter($divisionIds, function ($value) {
+                return $value !== null;
+            });
+            // Mengevaluasi array kosong menggunakan empty
+            $query->whereDoesntHave('divisions', function ($q) use ($divisionIds) {
+                $q->whereIn('devision_id', $divisionIds);
+            });
+        }
+
+        return $query;
+    }
+
+    public function scopeWhereHasNotProject($query, $projectIds)
+    {
+        if ($projectIds && $query) {
+            $projectIds = array_filter($projectIds, function ($value) {
+                return $value !== null;
+            });
+
+            $query->whereDoesntHave('projects', function ($q) use ($projectIds) {
+                $q->whereIn('project_id', $projectIds);
+            });
+        }
+
+        return $query;
+    }
+
 
     public function scopeWhereInArray($query, $record, $values)
     {
         MethodsHelpers::whereInArray($query, $record, $values);
+    }
+
+    public function scopeWhereRoles($query, $roleIds)
+    {
+        if ($query && $roleIds) {
+            $query->whereHas('roles', function ($q) use ($roleIds) {
+                $q->where('roleId', '!=', 1)->whereIn('roleId', $roleIds);
+            });
+        }
+
+        return $query;
     }
 
     public function scopeFilterSummary($query, $summary)
