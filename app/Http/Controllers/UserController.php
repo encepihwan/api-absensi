@@ -142,17 +142,6 @@ class UserController extends Controller
                 $userHaveRole->save();
             }
 
-            $divisionIds = $request->division_ids;
-            if (isset($divisionIds)) {
-                foreach ($divisionIds as $key => $divisionId) {
-                    $userHaveDivisions  = new UserHaveDivision();
-                    $userHaveDivisions->user_id = $user->id;
-                    $userHaveDivisions->devision_id = $divisionId;
-                    $userHaveDivisions->type = 'assign';
-                    $userHaveDivisions->save();
-                }
-            }
-
             $mailData = [
                 'password' => $password
             ];

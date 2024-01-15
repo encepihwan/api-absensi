@@ -22,6 +22,7 @@ class DevisionController extends Controller
         try {
             $data = Devision::filterByDateRange('created_at', $request->since, $request->until)
                 ->entities($request->entities)
+                ->filterByField('status', $request->status)
                 ->whereDivisions($request->division_ids)
                 ->executeType($request->typeGet, 10);
 

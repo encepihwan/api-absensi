@@ -26,10 +26,10 @@ class AttendacesController extends Controller
             $user_id = auth()->user()->id;
             $projectId = $request->projectId;
 
-            $data['all'] = Attendance::where('projectId', $projectId)->where('userId', $user_id)->count();
-            $data['clockin'] = Attendance::where('projectId', $projectId)->where('userId', $user_id)->where('type', 'clockin')->count();
-            $data['clockout'] = Attendance::where('projectId', $projectId)->where('userId', $user_id)->where('type', 'clockout')->count();
-            $data['late'] = Attendance::where('projectId', $projectId)->where('userId', $user_id)->where('status', 'late')->count();
+            $data['all'] = Attendance::filterByField('projectId', $projectId)->filterByField('userId', $user_id)->count();
+            $data['clockin'] = Attendance::filterByField('projectId', $projectId)->filterByField('userId', $user_id)->filterByField('type', 'clockin')->count();
+            $data['clockout'] = Attendance::filterByField('projectId', $projectId)->filterByField('userId', $user_id)->filterByField('type', 'clockout')->count();
+            $data['late'] = Attendance::filterByField('projectId', $projectId)->filterByField('userId', $user_id)->filterByField('status', 'late')->count();
 
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -140,6 +140,21 @@ class AttendacesController extends Controller
                 ->paginate($request->input('paginate', 10));
 
             return Json::response($data);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        }
+    }
+
+    public function index(Request $request)
+    {
+        try {
+            $attendance = Attendance::entities($request->entities)->paginate($request->input('paginate', 10));
+
+            return Json::response($attendance);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         } catch (\Illuminate\Database\QueryException $e) {
