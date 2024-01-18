@@ -23,7 +23,7 @@ class AttendacesController extends Controller
                 "late" => 0,
             ];
 
-            $user_id = auth()->user()->id;
+            $user_id = $request->admin_mode ? null : auth()->user()->id;
             $projectId = $request->projectId;
 
             $data['all'] = Attendance::filterByField('projectId', $projectId)->filterByField('userId', $user_id)->count();
@@ -119,6 +119,7 @@ class AttendacesController extends Controller
             $data->date = Carbon::now();
             $data->type = $request->action;
             $data->time = $request->time;
+            $data->full_address = $request->full_address;
             $data->save();
 
             return Json::response($data);

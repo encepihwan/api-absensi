@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Mail;
 use App\Mail\SendMail;
+use App\Models\Profile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class UserController extends Controller
@@ -219,8 +221,35 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function updateProfile(Request $request)
     {
-        //
+        try {
+            $userId = Auth()->user()->id;
+            $user = User::findOrFail($userId);
+            $user->name = $request->input('name', $user->name);
+            $user->email = $request->input('email', $user->email);
+            $user->save();
+            if (isset($user->profile)) {
+                $userProfile = Profile::findOrFail($user->profile->id);
+            } else {
+                $userProfile = new Profile();
+                $userProfile->userId = $user->id;
+            }
+
+            $userProfile->name = $request->input('name', $user->name);
+            $userProfile->address = $request->input('address', $userProfile->address);
+            $userProfile->phoneNumber = $request->input('phoneNumber', $userProfile->phoneNumber);
+            $userProfile->gender = $request->input('gender', $userProfile->gender);
+            $userProfile->mediaId = $request->input('mediaId', $userProfile->mediaId);
+            $userProfile->save();
+
+            return Json::response($userProfile);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        }
     }
 }

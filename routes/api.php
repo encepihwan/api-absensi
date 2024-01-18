@@ -66,6 +66,7 @@ Route::prefix('user')->middleware('auth:api')->group(function () {
     Route::post('/', [UserController::class, 'store']);
     Route::post('/selected', [UserController::class, 'userSelectionList']);
     Route::get('summary', [UserController::class, 'summary']);
+    Route::post('profile', [UserController::class, 'updateProfile']);
 });
 
 Route::prefix('devision')->middleware('auth:api')->group(function () {
