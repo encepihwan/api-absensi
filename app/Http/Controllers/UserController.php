@@ -228,6 +228,7 @@ class UserController extends Controller
             $user = User::findOrFail($userId);
             $user->name = $request->input('name', $user->name);
             $user->email = $request->input('email', $user->email);
+            $user->status = 'active';
             $user->save();
             if (isset($user->profile)) {
                 $userProfile = Profile::findOrFail($user->profile->id);
