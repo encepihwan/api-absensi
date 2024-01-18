@@ -7,8 +7,10 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DevisionController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProgressController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserHaveDivisionController;
 use App\Http\Controllers\UserHaveProjectController;
@@ -87,6 +89,22 @@ Route::prefix('project')->middleware('auth:api')->group(function () {
 
     Route::get('/global', [ProjectController::class, 'global_function']);
     Route::get('/detail-project', [ProjectController::class, 'detailProject']);
+});
+
+Route::prefix('progres')->middleware('auth:api')->group(function () {
+    Route::post('/', [ProgressController::class, 'index']);
+    Route::post('/store', [ProgressController::class, 'store']);
+    Route::get('/show/{id}', [ProgressController::class, 'show']);
+    Route::put('/update/{id}', [ProgressController::class, 'update']);
+    Route::post('/destroy/{id}', [ProgressController::class, 'destroy']);
+});
+
+Route::prefix('shift')->middleware('auth:api')->group(function () {
+    Route::post('/', [ShiftController::class, 'index']);
+    Route::post('/store', [ShiftController::class, 'store']);
+    Route::get('/show/{id}', [ShiftController::class, 'show']);
+    Route::put('/update/{id}', [ShiftController::class, 'update']);
+    Route::post('/destroy/{id}', [ShiftController::class, 'destroy']);
 });
 
 Route::prefix('attendance')->middleware('auth:api')->group(function () {
