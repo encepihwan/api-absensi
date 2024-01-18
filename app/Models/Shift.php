@@ -11,7 +11,7 @@ class Shift extends Model
     use HasFactory;
     protected $table = 'shifts';
     protected $fillable = [
-        'projectId','userId','timeIn','timeOut'
+        'timeIn','timeOut'
     ];
 
     public function scopeFilterByField($query, $record, $value)
