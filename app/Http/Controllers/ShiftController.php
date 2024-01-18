@@ -17,9 +17,9 @@ class ShiftController extends Controller
     {
         try {
 
-        $shift = Shift::filterByField('projectId', $request->project_id)
-            ->entities($request->entities)
-            ->paginate($request->input('paginate', 10));
+            $shift = Shift::filterByField('projectId', $request->project_id)
+                ->entities($request->entities)
+                ->paginate($request->input('paginate', 10));
 
             return Json::response($shift);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -50,12 +50,18 @@ class ShiftController extends Controller
     public function store(Request $request)
     {
         try {
+            //Query Add Shift
             $data = new Shift();
             $data->projectId = $request->projectId;
             $data->userId = $request->userId;
             $data->timeIn = $request->timeIn;
             $data->timeOut = $request->timeOut;
             $data->save();
+
+            // query add user have shift
+
+            // query add shift have project
+
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
@@ -107,7 +113,7 @@ class ShiftController extends Controller
     public function update(Request $request, $id)
     {
         try {
-            
+
             $data = Shift::findOrFail($id);
             $data->projectId = $request->input('projectId', $data->projectId);
             $data->userId = $request->input('userId', $data->userId);

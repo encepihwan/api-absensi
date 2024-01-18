@@ -14,6 +14,7 @@ use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserHaveDivisionController;
 use App\Http\Controllers\UserHaveProjectController;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -137,4 +138,17 @@ Route::prefix('user-project')->middleware(['auth:api'])->group(function () {
 Route::prefix('user-division')->middleware(['auth:api'])->group(function () {
     Route::post('/', [UserHaveDivisionController::class, 'insertUserAssign']);
     Route::delete('/{id}', [UserHaveDivisionController::class, 'deleteUserAssign']);
+});
+
+Route::get('/migrate', function () {
+    try {
+        // Menjalankan perintah migrate
+        Artisan::call('migrate');
+
+        // Jika tanpa error, berikan respons sukses
+        return response()->json(['message' => 'Migration successful'], 200);
+    } catch (\Exception $e) {
+        // Jika terjadi error, berikan respons dengan pesan error
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
 });
