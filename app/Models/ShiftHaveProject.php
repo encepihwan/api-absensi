@@ -12,7 +12,7 @@ class ShiftHaveProject extends Model
 
     public function shift()
     {
-        return $this->belongsTo(Shift::class, 'shitf_id');
+        return $this->belongsTo(Shift::class, 'shift_id');
     }
 
     public function project()

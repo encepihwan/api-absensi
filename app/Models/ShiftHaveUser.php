@@ -13,11 +13,11 @@ class ShiftHaveUser extends Model
 
     public function shift()
     {
-        return $this->belongsTo(Shift::class, 'shitf_id');
+        return $this->belongsTo(Shift::class, 'shift_id');
     }
 
     public function user()
     {
-        return $this->belongsTo(Project::class, 'user_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

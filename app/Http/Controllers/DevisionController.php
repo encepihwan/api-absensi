@@ -6,6 +6,7 @@ use App\Http\Helpers\Json;
 use App\Models\Devision;
 use App\Models\UserHaveDivision;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -20,10 +21,12 @@ class DevisionController extends Controller
     public function index(Request $request)
     {
         try {
+            $userId = Auth()->user()->id;
             $data = Devision::filterByDateRange('created_at', $request->since, $request->until)
                 ->entities($request->entities)
                 ->filterByField('status', $request->status)
                 ->whereDivisions($request->division_ids)
+                ->filterMyDivisions($request->isMyDivision ? $userId : null)
                 ->executeType($request->typeGet, 10);
 
             return Json::response($data);

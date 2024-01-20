@@ -78,6 +78,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(Profile::class, 'userId');
     }
 
+    public function shift()
+    {
+        return $this->hasMany(ShiftHaveUser::class, 'userId');
+    }
+
     public function divisions()
     {
         return $this->hasMany(UserHaveDivision::class, 'user_id');

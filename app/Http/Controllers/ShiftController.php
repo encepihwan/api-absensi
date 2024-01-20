@@ -19,8 +19,9 @@ class ShiftController extends Controller
     public function index(Request $request)
     {
         try {
-
+            $userId = auth()->user()->id;
             $shift = Shift::filterByField('projectId', $request->project_id)
+                ->filterMyShift($request->is_myshift ? $userId : null)
                 ->entities($request->entities)
                 ->paginate($request->input('paginate', 10));
 
@@ -61,15 +62,27 @@ class ShiftController extends Controller
             $data->timeOut = $request->timeOut;
             $data->save();
 
-            $shiftHaveUser = new ShiftHaveUser();
-            $shiftHaveUser->user_id = $request->user_id;
-            $shiftHaveUser->shift_id = $data->id;
-            $shiftHaveUser->save();
+            $project_ids = $request->projectIds;
+            $user_ids = $request->userIds;
 
-            $shiftHaveProject = new ShiftHaveProject();
-            $shiftHaveProject->project_id = $request->project_id;
-            $shiftHaveProject->shift_id = $data->id;
-            $shiftHaveProject->save();
+            if (isset($project_ids)) {
+                foreach ($project_ids as $key => $projectId) {
+                    $shiftHaveProject = new ShiftHaveProject();
+                    $shiftHaveProject->project_id = $projectId;
+                    $shiftHaveProject->shift_id = $data->id;
+                    $shiftHaveProject->save();
+                }
+            }
+
+            if (isset($user_ids)) {
+                foreach ($user_ids as $key => $userId) {
+                    $shiftHaveUser = new ShiftHaveUser();
+                    $shiftHaveUser->user_id = $userId;
+                    $shiftHaveUser->shift_id = $data->id;
+                    $shiftHaveUser->save();
+                }
+            }
+
 
             // query add user have shift
 

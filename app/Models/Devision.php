@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Helpers\MethodsHelpers;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -76,5 +77,14 @@ class Devision extends Model
     public function users()
     {
         return $this->hasMany(UserHaveDivision::class, 'devision_id');
+    }
+
+    public function scopeFilterMyDivisions($query, $userId)
+    {
+        if ($query && $userId && $userId !== null) {
+            $query->whereHas('users', function (Builder $subQuery) use ($userId) {
+                $subQuery->where('user_id', $userId);
+            });
+        }
     }
 }

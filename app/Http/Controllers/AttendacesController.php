@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Helpers\Json;
 use App\Models\Attendance;
 use App\Models\Medias;
+use App\Models\Shift;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -120,6 +121,14 @@ class AttendacesController extends Controller
             $data->type = $request->action;
             $data->time = $request->time;
             $data->full_address = $request->full_address;
+
+            $shift = Shift::findOrFail($request->shiftId);
+            if ($shift) {
+                $onTime = ($data->type === 'clockin') ? ($data->date <= $shift->timeIn) : ($data->date <= $shift->timeOut);
+                $data->status = $onTime ? 'on-time' : 'late';
+            }
+
+
             $data->save();
 
             return Json::response($data);

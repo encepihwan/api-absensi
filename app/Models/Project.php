@@ -45,6 +45,11 @@ class Project extends Model
         return $this->hasMany(UserHaveProject::class, 'project_id');
     }
 
+    public function shift()
+    {
+        return $this->hasMany(ShiftHaveProject::class, 'project_id');
+    }
+
     public function division()
     {
         return $this->belongsTo(Devision::class, 'devisionId');
