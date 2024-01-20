@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
@@ -25,11 +26,13 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         try {
+            $userId = $request->is_my_project ? Auth()->user()->id : null;
             $project = Project::filterByField('devisionId', $request->division_id)
                 ->entities($request->entities)
                 ->whereDivisions($request->division_ids)
                 ->whereWithEntities('users', $request->owner_id, 'user_id')
                 ->filterByField('status', $request->status)
+                ->filterMyProject($userId)
                 ->paginate($request->input('paginate', 10));
 
             return Json::response($project);

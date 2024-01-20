@@ -123,10 +123,15 @@ class AttendacesController extends Controller
             $data->full_address = $request->full_address;
 
             $shift = Shift::findOrFail($request->shiftId);
+
             if ($shift) {
-                $onTime = ($data->type === 'clockin') ? ($data->date <= $shift->timeIn) : ($data->date <= $shift->timeOut);
-                $data->status = $onTime ? 'on-time' : 'late';
+                if ($data->type === 'clockin') {
+                    $data->status = ($data->date > $shift->timeIn) ? 'late' : 'on-time';
+                } elseif ($data->type === 'clockout') {
+                    $data->status = ($data->date < $shift->timeOut) ? 'too-early' : 'on-time';
+                }
             }
+
 
 
             $data->save();

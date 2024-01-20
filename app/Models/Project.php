@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Helpers\MethodsHelpers;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -58,6 +59,17 @@ class Project extends Model
     public function scopeWhereDivisions($query, $divisions)
     {
         MethodsHelpers::whereInArray($query, 'devisionId', $divisions);
+    }
+
+    public function scopeFilterMyProject($query, $userId)
+    {
+        if ($query && $userId && $userId !== null) {
+            $query->whereHas('users', function (Builder $subQuery) use ($userId) {
+                $subQuery->where('user_id', $userId);
+            });
+        }
+
+        return $query;
     }
 
     public function scopeGenerateSlug($q, $title)
