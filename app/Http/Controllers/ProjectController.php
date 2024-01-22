@@ -98,7 +98,8 @@ class ProjectController extends Controller
     public function show($id, Request $request)
     {
         try {
-            $data = Project::entities($request->entities)->findOrFail($id);
+            $userId = $request->is_my_project ? Auth()->user()->id : null;
+            $data = Project::entities($request->entities)->filterMyProject()->findOrFail($id);
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');

@@ -122,13 +122,14 @@ class AuthController extends Controller
             $user = auth()->user();
             if (Hash::check($request->currentPassword, $user->password)) {
                 $user->update(['password' => bcrypt($request->newPassword)]);
+                $user->profile;
 
-                return response()->json([
+                return Json::response([
                     'message' => 'Password successfully updated',
                     'user' => $user,
                 ], 200);
             } else {
-                return response()->json(['error' => 'Current password is incorrect'], 400);
+                return Json::exception(['error' => 'Current password is incorrect'], 400);
             }
         } catch (ValidationException $ex) {
             return response()->json(['error' => 'An error occurred while changing the password'], 500);
