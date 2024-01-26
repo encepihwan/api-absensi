@@ -31,4 +31,14 @@ class Attendance extends Model
     {
         return $this->belongsTo(Project::class, 'projectId');
     }
+
+    public function media()
+    {
+        return $this->belongsTo(Medias::class, 'mediaAttendaceId');
+    }
+
+    public function mediaProof()
+    {
+        return $this->belongsTo(Medias::class, 'mediaOfWorkId');
+    }
 }
