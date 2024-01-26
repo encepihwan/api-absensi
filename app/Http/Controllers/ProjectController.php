@@ -139,6 +139,8 @@ class ProjectController extends Controller
             $data->latitude = $request->input('latitude', $data->latitude);
             $data->longtitude = $request->input('longtitude', $data->longtitude);
             $data->description = $request->input('description', $data->description);
+            $data->physical_process = $request->input("physical_process", $data->physical_process);
+            $data->disbursement_of_funds = $request->input("disbursement_of_funds", $data->disbursement_of_funds);
             $data->save();
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
