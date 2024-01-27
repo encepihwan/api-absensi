@@ -27,10 +27,10 @@ class AttendacesController extends Controller
             $user_id = $request->admin_mode ? null : auth()->user()->id;
             $projectId = $request->projectId;
 
-            $data['all'] = Attendance::filterByField('projectId', $projectId)->filterByField('userId', $user_id)->count();
-            $data['clockin'] = Attendance::filterByField('projectId', $projectId)->filterByField('userId', $user_id)->filterByField('type', 'clockin')->count();
-            $data['clockout'] = Attendance::filterByField('projectId', $projectId)->filterByField('userId', $user_id)->filterByField('type', 'clockout')->count();
-            $data['late'] = Attendance::filterByField('projectId', $projectId)->filterByField('userId', $user_id)->filterByField('status', 'late')->count();
+            $data['all'] = Attendance::filterByField('projectId', $projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->count();
+            $data['clockin'] = Attendance::filterByField('projectId', $projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->filterByField('type', 'clockin')->count();
+            $data['clockout'] = Attendance::filterByField('projectId', $projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->filterByField('type', 'clockout')->count();
+            $data['late'] = Attendance::filterByField('projectId', $projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->filterByField('status', 'late')->count();
 
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -167,7 +167,9 @@ class AttendacesController extends Controller
     public function index(Request $request)
     {
         try {
-            $attendance = Attendance::entities($request->entities)->paginate($request->input('paginate', 10));
+            $attendance = Attendance::entities($request->entities)
+                ->whereDivision($request->division_ids)
+                ->paginate($request->input('paginate', 10));
 
             return Json::response($attendance);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {

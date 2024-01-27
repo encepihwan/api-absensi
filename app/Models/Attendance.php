@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Http\Helpers\MethodsHelpers;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -40,5 +41,19 @@ class Attendance extends Model
     public function mediaProof()
     {
         return $this->belongsTo(Medias::class, 'mediaOfWorkId');
+    }
+
+    public function scopeWhereDivision($query, $divisionIds)
+    {
+        if ($query && $divisionIds) {
+            $divisionIds = array_filter($divisionIds, function ($value) {
+                return $value !== null;
+            });
+            $query->whereHas('project.division', function (Builder $subQuery) use ($divisionIds) {
+                $subQuery->whereIn('devisionId', $divisionIds);
+            });
+        }
+
+        return $query;
     }
 }
