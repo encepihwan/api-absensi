@@ -143,17 +143,32 @@ class ShiftController extends Controller
     {
         try {
 
+            DB::beginTransaction();
+
             $data = Shift::findOrFail($id);
             $data->timeIn = $request->input('timeIn', $data->timeIn);
             $data->timeOut = $request->input('timeOut', $data->timeOut);
             $data->save();
 
+            if (isset($user_ids)) {
+                foreach ($user_ids as $key => $userId) {
+                    $shiftHaveUser = new ShiftHaveUser();
+                    $shiftHaveUser->user_id = $userId;
+                    $shiftHaveUser->shift_id = $data->id;
+                    $shiftHaveUser->save();
+                }
+            }
+
+            DB::commit();
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            DB::rollBack();
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
             return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         } catch (\ErrorException $e) {
+            DB::rollBack();
             return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }

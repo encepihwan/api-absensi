@@ -99,7 +99,7 @@ class ProjectController extends Controller
     {
         try {
             $userId = $request->is_my_project ? Auth()->user()->id : null;
-            $data = Project::entities($request->entities)->filterMyProject()->findOrFail($id);
+            $data = Project::entities($request->entities)->filterMyProject($userId)->findOrFail($id);
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
@@ -141,6 +141,8 @@ class ProjectController extends Controller
             $data->description = $request->input('description', $data->description);
             $data->physical_process = $request->input("physical_process", $data->physical_process);
             $data->disbursement_of_funds = $request->input("disbursement_of_funds", $data->disbursement_of_funds);
+            $data->timeIn = $request->input("timeIn", $data->timeIn);
+            $data->timeOut = $request->input("timeOut", $data->timeOut);
             $data->save();
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
