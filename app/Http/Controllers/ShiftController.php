@@ -107,9 +107,6 @@ class ShiftController extends Controller
                             'timeInShift' => $userData->timeInShift,
                             'timeOutShift' => $userData->timeOutShift
                         ];
-            
-                        dd($userData);
-                        //Mail::to($request->email)->send(new SendMail($mailData));
                         User::sendMail($userData->email, $mailData);
                 }
             }
