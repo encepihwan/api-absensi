@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Helpers\Json;
+use App\Models\Project;
 use App\Models\Shift;
 use App\Models\ShiftHaveProject;
 use App\Models\ShiftHaveUser;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
 class ShiftController extends Controller
@@ -54,13 +56,17 @@ class ShiftController extends Controller
     public function store(Request $request)
     {
         try {
-
             DB::beginTransaction();
             //Query Add Shift
             $data = new Shift();
             $data->timeIn = $request->timeIn;
             $data->timeOut = $request->timeOut;
+            $data->type = $request->type;
+            $data->startdate = $request->startdate;
+            $data->targetdate = $request->targetdate;
+            $data->status = 'publish';
             $data->save();
+
 
             $project_ids = $request->projectIds;
             $user_ids = $request->userIds;
@@ -80,6 +86,31 @@ class ShiftController extends Controller
                     $shiftHaveUser->user_id = $userId;
                     $shiftHaveUser->shift_id = $data->id;
                     $shiftHaveUser->save();
+
+                    $userData = User::select('shifts.timeIn as timeInShift','shifts.timeOut as timeOutShift','users.name as nameUser','projects.name as projectName','users.*', 'projects.*')
+                        ->join('user_have_project', 'users.id', '=', 'user_have_project.user_id')
+                        ->join('projects', 'user_have_project.project_id', '=', 'projects.id')
+                        ->join('shift_have_projects','projects.id','=','shift_have_projects.project_id')
+                        ->join('shifts','shift_have_projects.shift_id','=','shifts.id')
+                        ->where('users.id', $userId)
+                        ->whereIn('user_have_project.project_id', $project_ids)
+                        ->first();
+
+                        $mailData = [
+                            'subject' => 'DETAIL INFORMASI PROJECT',
+                            'nameUser' => $userData->nameUser,
+                            'projectName' => $userData->projectName,
+                            'projectNo' => $userData->projectNo,
+                            'startdate' => $userData->startdate,
+                            'targetdate' => $userData->targetdate,
+                            'address' => $userData->address,
+                            'timeInShift' => $userData->timeInShift,
+                            'timeOutShift' => $userData->timeOutShift
+                        ];
+            
+                        dd($userData);
+                        //Mail::to($request->email)->send(new SendMail($mailData));
+                        User::sendMail($userData->email, $mailData);
                 }
             }
 
@@ -127,9 +158,22 @@ class ShiftController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function show2(Request $request)
     {
-        //
+        $userData = User::select('users.*', 'projects.*')
+            ->join('user_have_project', 'users.id', '=', 'user_have_project.user_id')
+            ->join('projects', 'user_have_project.project_id', '=', 'projects.id')
+            ->where('users.id', 3)
+            ->whereIn('user_have_project.project_id', [2])
+            ->get();
+
+        $project_ids = $request->projectIds;
+        $user_ids = $request->userIds;
+
+        $data = User::where('id', 3)
+            ->whereProjects($project_ids)->get();
+
+        return Json::response($userData);
     }
 
     /**

@@ -63,6 +63,11 @@ class User extends Authenticatable implements JWTSubject
         MethodsHelpers::entities($query, $entities);
     }
 
+    public static function sendMail($email,$mailData)
+    {
+        MethodsHelpers::sendMail($email,$mailData);
+    }
+
     public function roles()
     {
         return $this->hasMany(RoleHasUser::class, 'userId');

@@ -51,5 +51,22 @@ class UserSeeder extends Seeder
             'userId' => $user->id,
             'roleId' => 1,
         ]);
+
+        $user = User::create([
+            'name' => 'user',
+            'userName' => 'user',
+            'email' => 'user@mail.com',
+            'password' =>  bcrypt('123456'),
+        ]);
+
+        Profile::create([
+            'userId' => $user->id,
+            'name' => 'user',
+        ]);
+
+        RoleHasUser::create([
+            'userId' => $user->id,
+            'roleId' => 2,
+        ]);
     }
 }

@@ -5,6 +5,8 @@ namespace App\Http\Helpers;
 use Illuminate\Support\Str;
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Http;
+use Mail;
+use App\Mail\SendMail;
 
 class MethodsHelpers
 {
@@ -145,6 +147,11 @@ class MethodsHelpers
         }
 
         return $query;
+    }
+
+    public static function sendMail($email, $mailData)
+    {
+        Mail::to($email)->send(new SendMail($mailData));
     }
 
 

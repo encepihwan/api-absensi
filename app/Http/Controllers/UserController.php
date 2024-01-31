@@ -145,10 +145,12 @@ class UserController extends Controller
             }
 
             $mailData = [
-                'password' => $password
+                'password' => $password,
+                'subject' => 'PASSWORD USER'
             ];
 
-            Mail::to($request->email)->send(new SendMail($mailData));
+            //Mail::to($request->email)->send(new SendMail($mailData));
+            User::sendMail($request->email, $mailData);
 
             $user->roles;
 

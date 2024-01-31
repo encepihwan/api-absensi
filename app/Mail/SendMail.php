@@ -56,7 +56,7 @@ class SendMail extends Mailable
 
     public function build()
     {
-        return $this->subject('PASSWORD USER')
+        return $this->subject($this->mailData['subject'])
             ->view('emails.templateMail');
     }
 

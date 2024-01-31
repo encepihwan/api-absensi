@@ -106,6 +106,7 @@ Route::prefix('shift')->middleware('auth:api')->group(function () {
     Route::get('/show/{id}', [ShiftController::class, 'show']);
     Route::put('/update/{id}', [ShiftController::class, 'update']);
     Route::post('/destroy/{id}', [ShiftController::class, 'destroy']);
+    Route::post('/show2', [ShiftController::class, 'show2']);
 });
 
 Route::prefix('attendance')->middleware('auth:api')->group(function () {
