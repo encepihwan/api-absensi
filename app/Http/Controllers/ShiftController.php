@@ -22,7 +22,8 @@ class ShiftController extends Controller
     {
         try {
             $userId = auth()->user()->id;
-            $shift = Shift::filterByField('projectId', $request->project_id)
+            // 
+            $shift = Shift::filterByProjectId($request->project_id)
                 ->filterMyShift($request->is_myshift ? $userId : null)
                 ->entities($request->entities)
                 ->paginate($request->input('paginate', 10));

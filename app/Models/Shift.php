@@ -29,7 +29,7 @@ class Shift extends Model
     {
         return $this->belongsTo(Project::class, 'projectId');
     }
-    public function shift()
+    public function userShift()
     {
         return $this->hasMany(ShiftHaveUser::class, 'shift_id');
     }
@@ -44,6 +44,17 @@ class Shift extends Model
         if ($query && $userId && $userId !== null) {
             $query->whereHas('shift.user', function (Builder $subQuery) use ($userId) {
                 $subQuery->where('id', $userId);
+            });
+        }
+
+        return $query;
+    }
+
+    public function scopeFilterByProjectId($query, $projectId)
+    {
+        if ($query && $projectId) {
+            $query->whereHas('projectShift', function (Builder $subQuery) use ($projectId) {
+                $subQuery->where('project_id', $projectId);
             });
         }
 

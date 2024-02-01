@@ -51,6 +51,7 @@ class UserController extends Controller
                 ->whereProjects($request->project_ids)
                 ->whereHasNotProject($request->not_have_this_projects)
                 ->whereHasNotDivisions($request->not_have_divisions)
+                ->filterByShift($request->shift_id)
                 ->get();
 
             return Json::response($user);

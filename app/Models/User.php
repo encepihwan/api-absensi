@@ -63,9 +63,9 @@ class User extends Authenticatable implements JWTSubject
         MethodsHelpers::entities($query, $entities);
     }
 
-    public static function sendMail($email,$mailData)
+    public static function sendMail($email, $mailData)
     {
-        MethodsHelpers::sendMail($email,$mailData);
+        MethodsHelpers::sendMail($email, $mailData);
     }
 
     public function roles()
@@ -85,7 +85,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function shift()
     {
-        return $this->hasMany(ShiftHaveUser::class, 'userId');
+        return $this->hasMany(ShiftHaveUser::class, 'user_id');
     }
 
     public function divisions()
@@ -190,5 +190,16 @@ class User extends Authenticatable implements JWTSubject
 
             return $query;
         }
+    }
+
+    public function scopeFilterByShift($query, $shiftId)
+    {
+        if ($query && $shiftId) {
+            $query->whereHas('shift', function (Builder $subQuery) use ($shiftId) {
+                $subQuery->where('id', $shiftId);
+            });
+        }
+
+        return $query;
     }
 }
