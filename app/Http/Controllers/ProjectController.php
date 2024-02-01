@@ -75,6 +75,7 @@ class ProjectController extends Controller
             $data->status = 'draft';
             $data->rowStatus = false;
             $data->address = $request->address;
+            $data->documentId = $request->documentId;
             $data->latitude = $request->latitude;
             $data->longtitude = $request->longitude;
             $data->description = $request->description;
@@ -143,6 +144,7 @@ class ProjectController extends Controller
             $data->disbursement_of_funds = $request->input("disbursement_of_funds", $data->disbursement_of_funds);
             $data->timeIn = $request->input("timeIn", $data->timeIn);
             $data->timeOut = $request->input("timeOut", $data->timeOut);
+            $data->documentId = $request->input('documentId', $data->documentId);
             $data->save();
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {

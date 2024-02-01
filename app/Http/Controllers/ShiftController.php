@@ -65,7 +65,7 @@ class ShiftController extends Controller
             $data->type = $request->type;
             $data->startdate = $request->startdate;
             $data->targetdate = $request->targetdate;
-            $data->status = 'publish';
+            $data->status = '';
             $data->save();
 
 
