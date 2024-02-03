@@ -29,6 +29,10 @@ class UserController extends Controller
         try {
             $user = User::entities($request->entities)
                 ->whereDivisions($request->division_ids)
+                ->whereProjects($request->project_ids)
+                ->whereHasNotProject($request->not_have_this_projects)
+                ->whereHasNotDivisions($request->not_have_divisions)
+                ->filterByShift($request->shift_id)
                 ->filterSummary($request->summary)
                 ->paginate($request->input('paginate', 10));
 
@@ -52,6 +56,7 @@ class UserController extends Controller
                 ->whereHasNotProject($request->not_have_this_projects)
                 ->whereHasNotDivisions($request->not_have_divisions)
                 ->filterByShift($request->shift_id)
+                ->whereHasNotShift($request->not_have_this_shift)
                 ->get();
 
             return Json::response($user);

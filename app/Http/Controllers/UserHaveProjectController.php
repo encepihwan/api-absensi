@@ -41,4 +41,22 @@ class UserHaveProjectController extends Controller
             return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
+
+    public function insertUserAssigns(Request $request)
+    {
+        try {
+            $userIds = $request->user_ids;
+            foreach ($userIds as $key => $userId) {
+                $data = new UserHaveProject();
+                $data->user_id = $userId;
+                $data->project_id = $request->project_id;
+                $data->type = 'assign';
+                $data->save();
+            }
+
+            return Json::response('Sucess');
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
 }

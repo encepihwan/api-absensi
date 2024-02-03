@@ -196,7 +196,22 @@ class User extends Authenticatable implements JWTSubject
     {
         if ($query && $shiftId) {
             $query->whereHas('shift', function (Builder $subQuery) use ($shiftId) {
-                $subQuery->where('id', $shiftId);
+                $subQuery->where('shift_id', $shiftId);
+            });
+        }
+
+        return $query;
+    }
+
+    public function scopeWhereHasNotShift($query, $shiftIds)
+    {
+        if ($shiftIds && $query) {
+            $shiftIds = array_filter($shiftIds, function ($value) {
+                return $value !== null;
+            });
+
+            $query->whereDoesntHave('shift', function ($q) use ($shiftIds) {
+                $q->whereIn('id', $shiftIds);
             });
         }
 

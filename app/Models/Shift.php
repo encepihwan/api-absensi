@@ -42,7 +42,7 @@ class Shift extends Model
     public function scopeFilterMyShift($query, $userId)
     {
         if ($query && $userId && $userId !== null) {
-            $query->whereHas('shift.user', function (Builder $subQuery) use ($userId) {
+            $query->whereHas('userShift.user', function (Builder $subQuery) use ($userId) {
                 $subQuery->where('id', $userId);
             });
         }

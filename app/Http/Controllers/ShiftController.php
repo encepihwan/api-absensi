@@ -69,8 +69,12 @@ class ShiftController extends Controller
             $data->save();
 
 
-            $project_ids = $request->projectIds;
-            $user_ids = $request->userIds;
+            $projectId = $request->project_id;
+            $shiftHaveProject = new ShiftHaveProject();
+            $shiftHaveProject->project_id = $projectId;
+            $shiftHaveProject->shift_id = $data->id;
+            $shiftHaveProject->save();
+            // $user_ids = $request->userIds;
 
             if (isset($project_ids)) {
                 foreach ($project_ids as $key => $projectId) {
@@ -80,39 +84,6 @@ class ShiftController extends Controller
                     $shiftHaveProject->save();
                 }
             }
-
-            if (isset($user_ids)) {
-                foreach ($user_ids as $key => $userId) {
-                    $shiftHaveUser = new ShiftHaveUser();
-                    $shiftHaveUser->user_id = $userId;
-                    $shiftHaveUser->shift_id = $data->id;
-                    $shiftHaveUser->save();
-
-                    $userData = User::select('shifts.timeIn as timeInShift','shifts.timeOut as timeOutShift','users.name as nameUser','projects.name as projectName','users.*', 'projects.*')
-                        ->join('user_have_project', 'users.id', '=', 'user_have_project.user_id')
-                        ->join('projects', 'user_have_project.project_id', '=', 'projects.id')
-                        ->join('shift_have_projects','projects.id','=','shift_have_projects.project_id')
-                        ->join('shifts','shift_have_projects.shift_id','=','shifts.id')
-                        ->where('users.id', $userId)
-                        ->whereIn('user_have_project.project_id', $project_ids)
-                        ->first();
-
-                        $mailData = [
-                            'subject' => 'DETAIL INFORMASI PROJECT',
-                            'nameUser' => $userData->nameUser,
-                            'projectName' => $userData->projectName,
-                            'projectNo' => $userData->projectNo,
-                            'startdate' => $userData->startdate,
-                            'targetdate' => $userData->targetdate,
-                            'address' => $userData->address,
-                            'timeInShift' => $userData->timeInShift,
-                            'timeOutShift' => $userData->timeOutShift
-                        ];
-                        User::sendMail($userData->email, $mailData);
-                }
-            }
-
-
             // query add user have shift
 
             // query add shift have project
@@ -126,6 +97,78 @@ class ShiftController extends Controller
             return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         } catch (\ErrorException $e) {
             DB::rollBack();
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        }
+    }
+
+    public function addUserShift(Request $request)
+    {
+        try {
+            $user_ids = $request->user_ids;
+            if (isset($user_ids)) {
+                foreach ($user_ids as $key => $userId) {
+                    $shiftHaveUser = new ShiftHaveUser();
+                    $shiftHaveUser->user_id = $userId;
+                    $shiftHaveUser->shift_id = $request->shift_id;
+                    $shiftHaveUser->save();
+
+
+                    if (isset($user_ids)) {
+                        foreach ($user_ids as $key => $userId) {
+                            $shiftHaveUser = new ShiftHaveUser();
+                            $shiftHaveUser->user_id = $userId;
+                            $shiftHaveUser->shift_id = $data->id;
+                            $shiftHaveUser->save();
+
+                            $userData = User::select('shifts.timeIn as timeInShift', 'shifts.timeOut as timeOutShift', 'users.name as nameUser', 'projects.name as projectName', 'users.*', 'projects.*')
+                                ->join('user_have_project', 'users.id', '=', 'user_have_project.user_id')
+                                ->join('projects', 'user_have_project.project_id', '=', 'projects.id')
+                                ->join('shift_have_projects', 'projects.id', '=', 'shift_have_projects.project_id')
+                                ->join('shifts', 'shift_have_projects.shift_id', '=', 'shifts.id')
+                                ->where('users.id', $userId)
+                                ->whereIn('user_have_project.project_id', $project_ids)
+                                ->first();
+
+                            $mailData = [
+                                'subject' => 'DETAIL INFORMASI PROJECT',
+                                'nameUser' => $userData->nameUser,
+                                'projectName' => $userData->projectName,
+                                'projectNo' => $userData->projectNo,
+                                'startdate' => $userData->startdate,
+                                'targetdate' => $userData->targetdate,
+                                'address' => $userData->address,
+                                'timeInShift' => $userData->timeInShift,
+                                'timeOutShift' => $userData->timeOutShift
+                            ];
+                            User::sendMail($userData->email, $mailData);
+                        }
+                    }
+                }
+            }
+
+            return Json::response("success");
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        }
+    }
+
+    public function deleteShiftUser(Request $request)
+    {
+        try {
+            $relation_id = $request->relation_id;
+            $data = ShiftHaveUser::findOrFail($relation_id);
+            $data->delete();
+
+            return Json::response("success");
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
             return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
@@ -224,8 +267,13 @@ class ShiftController extends Controller
     public function destroy($id)
     {
         try {
-            Shift::where('id', $id)->delete();
-            return Json::response();
+            $shift = Shift::findOrFail($id);
+            $shift->project()->delete();
+            $shift->userShift()->delete();
+            $shift->projectShift()->delete();
+            $shift->delete();
+
+            return Json::response($shift);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         } catch (\Illuminate\Database\QueryException $e) {

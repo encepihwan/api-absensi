@@ -105,8 +105,10 @@ Route::prefix('shift')->middleware('auth:api')->group(function () {
     Route::post('/store', [ShiftController::class, 'store']);
     Route::get('/show/{id}', [ShiftController::class, 'show']);
     Route::put('/update/{id}', [ShiftController::class, 'update']);
-    Route::post('/destroy/{id}', [ShiftController::class, 'destroy']);
+    Route::delete('/destroy/{id}', [ShiftController::class, 'destroy']);
     Route::post('/show2', [ShiftController::class, 'show2']);
+    Route::post('/add-user', [ShiftController::class, 'addUserShift']);
+    Route::post('/delete-user', [ShiftController::class, 'deleteShiftUser']);
 });
 
 Route::prefix('attendance')->middleware('auth:api')->group(function () {
@@ -133,6 +135,7 @@ Route::prefix('roles')->middleware(['auth:api'])->group(function () {
 
 Route::prefix('user-project')->middleware(['auth:api'])->group(function () {
     Route::post('/', [UserHaveProjectController::class, 'insertUserAssign']);
+    Route::post('/inserts', [UserHaveProjectController::class, 'insertUserAssigns']);
     Route::delete('/{id}', [UserHaveProjectController::class, 'deleteUserAssign']);
 });
 
