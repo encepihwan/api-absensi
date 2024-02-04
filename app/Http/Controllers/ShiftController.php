@@ -105,7 +105,7 @@ class ShiftController extends Controller
     {
         try {
             $user_ids = $request->user_ids;
-            $project_ids = $request->$project_ids;
+            $project_ids = $request->project_ids;
             if (isset($user_ids)) {
                 foreach ($user_ids as $key => $userId) {
                     $shiftHaveUser = new ShiftHaveUser();
