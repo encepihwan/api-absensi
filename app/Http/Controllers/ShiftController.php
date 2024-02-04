@@ -106,6 +106,7 @@ class ShiftController extends Controller
         try {
             $user_ids = $request->user_ids;
             $project_ids = $request->project_ids;
+            $data = [];
             if (isset($user_ids)) {
                 foreach ($user_ids as $key => $userId) {
                     $shiftHaveUser = new ShiftHaveUser();
@@ -135,9 +136,10 @@ class ShiftController extends Controller
                     ];
                     User::sendMail($userData->email, $mailData);
                 }
+                array_push($data, $shiftHaveUser);
             }
 
-            return Json::response("success");
+            return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         } catch (\Illuminate\Database\QueryException $e) {
@@ -154,7 +156,7 @@ class ShiftController extends Controller
             $data = ShiftHaveUser::findOrFail($relation_id);
             $data->delete();
 
-            return Json::response("success");
+            return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         } catch (\Illuminate\Database\QueryException $e) {
