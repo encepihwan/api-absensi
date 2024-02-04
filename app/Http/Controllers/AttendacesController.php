@@ -127,7 +127,7 @@ class AttendacesController extends Controller
             if ($shift) {
                 if ($data->type === 'clockin') {
                     $data->status = ($data->date > $shift->timeIn) ? 'late' : 'on-time';
-                } elseif ($data->type === 'clockout') {
+                } else if ($data->type === 'clockout') {
                     $data->status = ($data->date < $shift->timeOut) ? 'too-early' : 'on-time';
                 }
             }
