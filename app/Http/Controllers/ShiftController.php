@@ -113,37 +113,27 @@ class ShiftController extends Controller
                     $shiftHaveUser->shift_id = $request->shift_id;
                     $shiftHaveUser->save();
 
+                    $userData = User::select('shifts.timeIn as timeInShift', 'shifts.timeOut as timeOutShift', 'users.name as nameUser', 'projects.name as projectName', 'users.*', 'projects.*')
+                        ->join('user_have_project', 'users.id', '=', 'user_have_project.user_id')
+                        ->join('projects', 'user_have_project.project_id', '=', 'projects.id')
+                        ->join('shift_have_projects', 'projects.id', '=', 'shift_have_projects.project_id')
+                        ->join('shifts', 'shift_have_projects.shift_id', '=', 'shifts.id')
+                        ->where('users.id', $userId)
+                        ->whereIn('user_have_project.project_id', $project_ids)
+                        ->first();
 
-                    if (isset($user_ids)) {
-                        foreach ($user_ids as $key => $userId) {
-                            $shiftHaveUser = new ShiftHaveUser();
-                            $shiftHaveUser->user_id = $userId;
-                            $shiftHaveUser->shift_id = $request->shift_id;
-                            $shiftHaveUser->save();
-
-                            $userData = User::select('shifts.timeIn as timeInShift', 'shifts.timeOut as timeOutShift', 'users.name as nameUser', 'projects.name as projectName', 'users.*', 'projects.*')
-                                ->join('user_have_project', 'users.id', '=', 'user_have_project.user_id')
-                                ->join('projects', 'user_have_project.project_id', '=', 'projects.id')
-                                ->join('shift_have_projects', 'projects.id', '=', 'shift_have_projects.project_id')
-                                ->join('shifts', 'shift_have_projects.shift_id', '=', 'shifts.id')
-                                ->where('users.id', $userId)
-                                ->whereIn('user_have_project.project_id', $project_ids)
-                                ->first();
-
-                            $mailData = [
-                                'subject' => 'DETAIL INFORMASI PROJECT',
-                                'nameUser' => $userData->nameUser,
-                                'projectName' => $userData->projectName,
-                                'projectNo' => $userData->projectNo,
-                                'startdate' => $userData->startdate,
-                                'targetdate' => $userData->targetdate,
-                                'address' => $userData->address,
-                                'timeInShift' => $userData->timeInShift,
-                                'timeOutShift' => $userData->timeOutShift
-                            ];
-                            User::sendMail($userData->email, $mailData);
-                        }
-                    }
+                    $mailData = [
+                        'subject' => 'DETAIL INFORMASI PROJECT',
+                        'nameUser' => $userData->nameUser,
+                        'projectName' => $userData->projectName,
+                        'projectNo' => $userData->projectNo,
+                        'startdate' => $userData->startdate,
+                        'targetdate' => $userData->targetdate,
+                        'address' => $userData->address,
+                        'timeInShift' => $userData->timeInShift,
+                        'timeOutShift' => $userData->timeOutShift
+                    ];
+                    User::sendMail($userData->email, $mailData);
                 }
             }
 
