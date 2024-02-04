@@ -43,6 +43,11 @@ class Attendance extends Model
         return $this->belongsTo(Medias::class, 'mediaOfWorkId');
     }
 
+    public function shift()
+    {
+        return $this->belongsTo(Shift::class, 'shift_id');
+    }
+
     public function scopeWhereDivision($query, $divisionIds)
     {
         if ($query && $divisionIds) {

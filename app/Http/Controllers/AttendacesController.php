@@ -121,6 +121,7 @@ class AttendacesController extends Controller
             $data->type = $request->action;
             $data->time = $request->time;
             $data->full_address = $request->full_address;
+            $data->shift_id = $request->shiftId;
 
             $shift = Shift::findOrFail($request->shiftId);
 
