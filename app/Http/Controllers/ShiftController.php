@@ -105,6 +105,7 @@ class ShiftController extends Controller
     {
         try {
             $user_ids = $request->user_ids;
+            $project_ids = $request->$project_ids;
             if (isset($user_ids)) {
                 foreach ($user_ids as $key => $userId) {
                     $shiftHaveUser = new ShiftHaveUser();
@@ -117,7 +118,7 @@ class ShiftController extends Controller
                         foreach ($user_ids as $key => $userId) {
                             $shiftHaveUser = new ShiftHaveUser();
                             $shiftHaveUser->user_id = $userId;
-                            $shiftHaveUser->shift_id = $data->id;
+                            $shiftHaveUser->shift_id = $request->shift_id;
                             $shiftHaveUser->save();
 
                             $userData = User::select('shifts.timeIn as timeInShift', 'shifts.timeOut as timeOutShift', 'users.name as nameUser', 'projects.name as projectName', 'users.*', 'projects.*')

@@ -8,6 +8,7 @@ use App\Models\Medias;
 use App\Models\Shift;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -31,6 +32,7 @@ class AttendacesController extends Controller
             $data['clockin'] = Attendance::filterByField('projectId', $projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->filterByField('type', 'clockin')->count();
             $data['clockout'] = Attendance::filterByField('projectId', $projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->filterByField('type', 'clockout')->count();
             $data['late'] = Attendance::filterByField('projectId', $projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->filterByField('status', 'late')->count();
+            $data['overtime'] = Attendance::filterByField('projectId', $projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->whereOvertimeShift('lembur')->count();
 
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -58,8 +60,6 @@ class AttendacesController extends Controller
             if ($validator->fails()) {
                 return response()->json($validator->errors()->toJson(), 400);
             }
-
-            // Simpan ofWork ke dalam Medias
             $ofWorkImage = $this->saveImage($request->file('proofOfWork'), 'proofOfWork');
 
             // Simpan attendances ke dalam Medias

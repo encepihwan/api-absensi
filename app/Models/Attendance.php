@@ -61,4 +61,15 @@ class Attendance extends Model
 
         return $query;
     }
+
+    public function scopeWhereOvertimeShift($query, $status)
+    {
+        if ($query && $status) {
+            $query->whereHas('shift', function (Builder $subQuery) use ($status) {
+                $subQuery->where('type', $status);
+            });
+        }
+
+        return $query;
+    }
 }
