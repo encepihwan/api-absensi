@@ -27,7 +27,7 @@ class DevisionController extends Controller
                 ->filterByField('status', $request->status)
                 ->whereDivisions($request->division_ids)
                 ->filterMyDivisions($request->isMyDivision ? $userId : null)
-                ->executeType($request->typeGet, 10);
+                ->paginate($request->input('paginate', 10));
 
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {

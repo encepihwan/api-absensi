@@ -153,6 +153,7 @@ class AttendacesController extends Controller
             $data = Attendance::entities($request->entities)
                 ->filterByField('projectId', $request->projectId)
                 ->filterByField('userId', auth()->user()->id)
+                ->filterSummary($request->summary, $request)
                 ->paginate($request->input('paginate', 10));
 
             return Json::response($data);
@@ -168,8 +169,11 @@ class AttendacesController extends Controller
     public function index(Request $request)
     {
         try {
+            $user_id = $request->admin_mode ? null : auth()->user()->id;
+            $projectId = $request->projectId;
             $attendance = Attendance::entities($request->entities)
                 ->whereDivision($request->division_ids)
+                ->filterSummary($request->summary, $request, $user_id)
                 ->paginate($request->input('paginate', 10));
 
             return Json::response($attendance);

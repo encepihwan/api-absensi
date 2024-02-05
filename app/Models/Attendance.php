@@ -72,4 +72,21 @@ class Attendance extends Model
 
         return $query;
     }
+
+    public function scopeFilterSummary($query, $summary, $request, $user_id)
+    {
+        if ($query && $summary) {
+            $basicQuery = $query->filterByField('projectId', $request->projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id);
+            if ($summary !== 'overtime' && $summary !== 'all' && $summary !== 'late') {
+                $query->filterByField('projectId', $request->projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->filterByField('type', $summary);
+                // dd($request->projectId);
+            } else if ($summary === 'overtime') {
+                $query->filterByField('projectId', $request->projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->whereOvertimeShift('lembur');
+            } else if ($summary === 'late') {
+                $query->filterByField('projectId', $request->projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->filterByField('status', $summary);
+            }
+        }
+
+        return $query;
+    }
 }
