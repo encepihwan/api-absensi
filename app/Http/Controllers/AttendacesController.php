@@ -150,10 +150,11 @@ class AttendacesController extends Controller
     public function attendanceLogs(Request $request)
     {
         try {
+            $user_id = $request->admin_mode ? null : auth()->user()->id;
             $data = Attendance::entities($request->entities)
                 ->filterByField('projectId', $request->projectId)
                 ->filterByField('userId', auth()->user()->id)
-                ->filterSummary($request->summary, $request)
+                ->filterSummary($request->summary, $request, $user_id)
                 ->paginate($request->input('paginate', 10));
 
             return Json::response($data);
