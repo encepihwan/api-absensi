@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "sibedasabsensi-1707845400236",
+  "private_key_id": "ea6248d416605ab0d76508d370e2db5d4b7cc34f",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDbgKCh0GtXkgHG\nbWbWAZqlqOPBukFoLpIQGwz4GgNY/HkZ3DtWPYhjfe3RC+pQykZjVQrIRNknd9yt\nzI+rVaRpvOm/SadAP9F992mvA9zYNoOge9E+9aS97RZ/AVqIBth/IjN14OzhXumC\n1wS5/q3t3Ab6i5sk1R08jz8HGXUfijg6uVHwO2M+wQkafcansoaVQ7RkhSd7/9J2\nRCJZxVAxYX4Csagqr9SaSnGdykq6kNfFMyWv+92zuijhilEiqUtJiwHOfvzfU02q\nJ21H0C9Y6tBYV+o4Nux4k8aX0b6co02WQULVZX8+SSkzOm3dnQ37zjFFk2rQXTwg\n3c2LoaC3AgMBAAECggEAHlPsXc8tNaE/y4nMHp+EHYVzSo4QgXOFzOHf7duyQLZJ\niTArpqPD13NLy4lo65a3GPxkC/2vP0vJWt4br6GaoN1wMnTbvf3TVSM9H+hZuCn4\nD9FrvNY11+QNKqkmOAsyGIbCM3RLZmw1uVU6GvS8VVQERtPJMNKdQoPMQo/a5ety\niLkMJju+QWUCx7mjWmDMexL/IM7YW3lF1d8UP+Sb7Klf4nNeSSNmZa4n46wEHlM6\ndKu426e5KKmrHSzXtVtOqWeCLuT8EeiCZXl9tZy4erdQGEHKSK1wOkzPtE4RkXqd\nV9dElgqlL9u48nldZ5iMQUyrInOiIA6IJ0OS8LbqsQKBgQDzFdcTyHFQmwhQmlAI\nsApibYSr3Eo+lCD5W3YMVHdpbx0C29XRCntT90Al4md9+efg2iVbh5sAy6gAVW+d\nxbnVAIdPs6DhDd2eGd0868tGEl7LO249WKKaTqrtSDDK3hs3pygfSicmXFngc+QY\nCH2mDUjc4JGwIw8r+AqvTRPmGQKBgQDnKgqBWWi/ddt9a50EZEW0CIyQCzaqE7r2\naxlXf6sIkGqE8FDHiKZH5LMeP2rVu7sfAqCeKAXOHAoFv9B9pCa7jxhYgCkHlCZ8\n/G6gOkAqg6Xdme7yYVNwrR4HG52BrkxowdFmyyGIKrVjqA+TIGlXMv85j7QbbnA8\n1aD8l8h3TwKBgQDtAYxUE4i4CJBQ1kPWVJ2rXhCO6BfTb+W+ejhcyTYsLFPi56hP\nSqL4OQfoaBhzsWctykPGPC8a1XYV7TcIYzJOxVcolID1LOm5LoqQzW3CAkM+b9GK\nKpNPVAg/lbVM9sUeu/HYoBoPwtc2iogIDq9DaYxzHtmtHGG8gvkX9lTCcQKBgGnM\noRBAhqOSYonNtgiriAd1HjhTGYrQCvL7Y5bbdMEvr8D2aFJapZgkASLn7ZKzIFp6\nDl80fCuwQ5oMB3VpqtyPCpp+1ciFMvRjaJJm9rU+mayJ5oYCq3jXkvW32ufeiVQs\n2RVOBSPYQDrDUZWJ8Qya55tFvS4M5svBDrRtF7AbAoGBANZ1X2iJ3nlGDnRctehU\nAk3MqWA92HfgLKnWUuJevhPoDz/9Exf/Ed8kXRsDdxXuYXdykQUeIBhOkVgn0hXd\nbKalThfe/pdm3wcKieVvhVSrVCCBXH011uGrM5KnIagrvE3Vr1cQBBbtg01UQ6N+\nnatFlBQrY/HDXbLAi4F4IKwl\n-----END PRIVATE KEY-----\n",
+  "client_email": "sibedasabsensi@sibedasabsensi-1707845400236.iam.gserviceaccount.com",
+  "client_id": "100476994286326132236",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/sibedasabsensi%40sibedasabsensi-1707845400236.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

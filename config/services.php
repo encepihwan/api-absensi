@@ -30,4 +30,10 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID', '6Lc1X3EpAAAAAJPNVwqWxgE0DdSygkusdDAghve5'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET', '6Lc1X3EpAAAAAGqY6tkbzgqbn6iKrTkelHQcs37S'),
+        'redirect' => env('GOOGLE_REDIRECT'),
+    ],
+
 ];
