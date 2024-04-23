@@ -145,6 +145,7 @@ class ProjectController extends Controller
             $data->timeIn = $request->input("timeIn", $data->timeIn);
             $data->timeOut = $request->input("timeOut", $data->timeOut);
             $data->documentId = $request->input('documentId', $data->documentId);
+            $data->projectNo = $request->input('projectNo', $data->projectNo);
             $data->save();
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
