@@ -28,11 +28,16 @@ class AttendacesController extends Controller
             $user_id = $request->admin_mode ? null : auth()->user()->id;
             $projectId = $request->projectId;
 
-            $data['all'] = Attendance::filterByField('projectId', $projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->count();
-            $data['clockin'] = Attendance::filterByField('projectId', $projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->filterByField('type', 'clockin')->count();
-            $data['clockout'] = Attendance::filterByField('projectId', $projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->filterByField('type', 'clockout')->count();
-            $data['late'] = Attendance::filterByField('projectId', $projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->filterByField('status', 'late')->count();
-            $data['overtime'] = Attendance::filterByField('projectId', $projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->whereOvertimeShift('lembur')->count();
+            $data['all'] = Attendance::filterByField('projectId', $projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)
+                ->whereDateRange('date', $request->since, $request->until)->count();
+            $data['clockin'] = Attendance::filterByField('projectId', $projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->filterByField('type', 'clockin')
+                ->whereDateRange('date', $request->since, $request->until)->count();
+            $data['clockout'] = Attendance::filterByField('projectId', $projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->filterByField('type', 'clockout')
+                ->whereDateRange('date', $request->since, $request->until)->count();
+            $data['late'] = Attendance::filterByField('projectId', $projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->filterByField('status', 'late')
+                ->whereDateRange('date', $request->since, $request->until)->count();
+            $data['overtime'] = Attendance::filterByField('projectId', $projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->whereOvertimeShift('lembur')
+                ->whereDateRange('date', $request->since, $request->until)->count();
 
             return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
@@ -175,6 +180,7 @@ class AttendacesController extends Controller
             $attendance = Attendance::entities($request->entities)
                 ->whereDivision($request->division_ids)
                 ->filterSummary($request->summary, $request, $user_id)
+                ->whereDateRange('date', $request->since, $request->until)
                 ->paginate($request->input('paginate', 10));
 
             return Json::response($attendance);

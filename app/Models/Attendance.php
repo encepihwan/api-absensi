@@ -89,4 +89,9 @@ class Attendance extends Model
 
         return $query;
     }
+
+    public function scopeWhereDateRange($query, $target_field, $since, $until)
+    {
+        MethodsHelpers::filterByDateRange($query, $target_field, $since, $until);
+    }
 }
