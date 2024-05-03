@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\AttendaceExport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Helpers\Json;
 use App\Models\Attendance;
 use App\Models\Medias;
@@ -163,6 +165,32 @@ class AttendacesController extends Controller
                 ->paginate($request->input('paginate', 10));
 
             return Json::response($data);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        } catch (\ErrorException $e) {
+            return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
+        }
+    }
+
+    public function Export(Request $request)
+    {
+        try {
+            // Mengambil data dari sumber yang sesuai (misalnya dari method index)
+           
+            // $user_id = $request->admin_mode ? null : auth()->user()->id;
+            $attendance = Attendance::entities($request->entities)
+            ->whereDivision($request->division_ids)
+            ->whereDateRange('date', $request->since, $request->until)
+            ->get();
+            // return Json::response($attendance);
+            // dd($attendance);
+            $export = new AttendaceExport($attendance);
+            
+
+            return Excel::download($export, 'attendance.xlsx');
+            
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         } catch (\Illuminate\Database\QueryException $e) {

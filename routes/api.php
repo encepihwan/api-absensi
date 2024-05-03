@@ -115,6 +115,7 @@ Route::prefix('attendance')->middleware('auth:api')->group(function () {
     Route::get('/', [AttendacesController::class, 'index']);
     Route::post('/', [AttendacesController::class, 'store']);
     Route::get('/summary', [AttendacesController::class, 'summary']);
+    
     Route::get('/log', [AttendacesController::class, 'attendanceLogs']);
 });
 
@@ -143,6 +144,8 @@ Route::prefix('user-division')->middleware(['auth:api'])->group(function () {
     Route::post('/', [UserHaveDivisionController::class, 'insertUserAssign']);
     Route::delete('/{id}', [UserHaveDivisionController::class, 'deleteUserAssign']);
 });
+
+Route::get('/export', [AttendacesController::class, 'Export']);
 
 Route::get('/migrate', function () {
     try {
