@@ -75,7 +75,7 @@ class Attendance extends Model
 
     public function scopeFilterSummary($query, $summary, $request, $user_id)
     {
-        if ($query && $summary) {
+        if ($query && $summary && $user_id) {
             $basicQuery = $query->filterByField('projectId', $request->projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id);
             if ($summary !== 'overtime' && $summary !== 'all' && $summary !== 'late') {
                 $query->filterByField('projectId', $request->projectId)->whereDivision($request->division_ids)->filterByField('userId', $user_id)->filterByField('type', $summary);

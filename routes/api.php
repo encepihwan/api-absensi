@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DevisionController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProgressController;
@@ -115,7 +116,7 @@ Route::prefix('attendance')->middleware('auth:api')->group(function () {
     Route::get('/', [AttendacesController::class, 'index']);
     Route::post('/', [AttendacesController::class, 'store']);
     Route::get('/summary', [AttendacesController::class, 'summary']);
-    
+
     Route::get('/log', [AttendacesController::class, 'attendanceLogs']);
 });
 
@@ -146,6 +147,12 @@ Route::prefix('user-division')->middleware(['auth:api'])->group(function () {
 });
 
 Route::get('/export', [AttendacesController::class, 'Export']);
+Route::get('/export-data/{file_path}', [FileController::class, 'downloadExcel']);
+
+Route::prefix('files')->middleware(['auth:api'])->group(function () {
+    Route::get('/', [FileController::class, 'index']);
+    Route::patch('{id}', [FileController::class, 'updateFile']);
+});
 
 Route::get('/migrate', function () {
     try {

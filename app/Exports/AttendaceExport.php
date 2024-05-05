@@ -3,42 +3,43 @@
 namespace App\Exports;
 
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Illuminate\Support\Collection;
 
 class AttendaceExport implements FromCollection
 {
     /**
-    * @return \Illuminate\Support\Collection
-    */
+     * @return \Illuminate\Support\Collection
+     */
 
     protected $data;
 
     public function __construct($data)
     {
-        // dd($data);
         $this->data = $data;
     }
 
     public function collection()
     {
-        $collection = collect($this->data)->map(function ($item) {
-            return [
+        $collection = collect(); // Inisialisasi koleksi kosong
+
+        foreach ($this->data as $item) {
+            $collection->push([
                 'name' => $item['user']['name'] ?? null,
                 'userName' => $item['user']['userName'] ?? null,
-                'full_address' =>    $item['full_address'] ?? null,
-                'Project Name'  => $item['project']['name'] ?? null,
-                'Project Number'  => $item['project']['projectNo'] ?? null,
-                'latitude'   => $item['latitude'] ?? null,
-                'longtitude'  => $item['longtitude'] ?? null,
-                'date'       => $item['date'] ?? null,
-                'time'       => $item['time'] ?? null,
-                'type'       => $item['type'] ?? null,
-                'status'     => $item['status'] ?? null,
-                'project Id'  => $item['projectId'] ?? null,
-                
-            ];
-        });
+                'full_address' => $item['full_address'] ?? null,
+                'Project Name' => $item['project']['name'] ?? null,
+                'Project Number' => $item['project']['projectNo'] ?? null,
+                'latitude' => $item['latitude'] ?? null,
+                'longitude' => $item['longitude'] ?? null, // Perbaikan typo
+                'date' => $item['date'] ?? null,
+                'time' => $item['time'] ?? null,
+                'type' => $item['type'] ?? null,
+                'status' => $item['status'] ?? null,
+                'project Id' => $item['projectId'] ?? null,
+            ]);
+        }
 
-        // Add headers as the first row in the collection
+        // Tambahkan header sebagai baris pertama dalam koleksi
         $withHeaders = collect([
             [
                 'name',
@@ -47,7 +48,7 @@ class AttendaceExport implements FromCollection
                 'Project Name',
                 'Project Number',
                 'latitude',
-                'longtitude',
+                'longitude',
                 'date',
                 'time',
                 'type',
@@ -57,6 +58,5 @@ class AttendaceExport implements FromCollection
         ])->merge($collection);
 
         return $withHeaders;
-        // return collect($this->data);
     }
 }

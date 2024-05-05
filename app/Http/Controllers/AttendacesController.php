@@ -6,6 +6,7 @@ use App\Exports\AttendaceExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Helpers\Json;
 use App\Models\Attendance;
+use App\Models\File;
 use App\Models\Medias;
 use App\Models\Shift;
 use Illuminate\Http\Request;
@@ -14,6 +15,7 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Storage;
 
 class AttendacesController extends Controller
 {
@@ -177,25 +179,56 @@ class AttendacesController extends Controller
     public function Export(Request $request)
     {
         try {
+            DB::beginTransaction();
             // Mengambil data dari sumber yang sesuai (misalnya dari method index)
-           
-            // $user_id = $request->admin_mode ? null : auth()->user()->id;
+            $user_id = $request->admin_mode ? null : auth()->user()->id;
+            $projectId = $request->projectId;
             $attendance = Attendance::entities($request->entities)
-            ->whereDivision($request->division_ids)
-            ->whereDateRange('date', $request->since, $request->until)
-            ->get();
-            // return Json::response($attendance);
-            // dd($attendance);
-            $export = new AttendaceExport($attendance);
-            
+                ->whereDivision($request->division_ids)
+                ->filterSummary($request->summary, $request, $user_id)
+                ->whereDateRange('date', $request->since, $request->until)
+                ->paginate($request->input('paginate', 10));
 
-            return Excel::download($export, 'attendance.xlsx');
-            
+            // Simpan file dengan nama <unik></unik>
+            $fileName = 'attendance_' . time() . '.xlsx'; // Nama file unik
+            $export = new AttendaceExport($attendance);
+
+            // Menentukan direktori penyimpanan sementara
+            $tempStoragePath = 'attendances';
+
+            // Menyimpan file Excel ke dalam direktori penyimpanan sementara
+            Excel::store($export, $tempStoragePath . '/' . $fileName);
+
+            // Path sementara ke file yang disimpan
+            $tempFilePath = $tempStoragePath . '/' . $fileName;
+
+            $file = new File();
+            $file->file_name = $fileName;
+            $file->save();
+
+            // Pindahkan file ke dalam folder public
+            $newFilePath = 'attendances/' . $fileName;
+            Storage::move($tempFilePath, $newFilePath);
+
+            // Path ke file yang dapat diakses secara langsung oleh klien
+            $publicFilePath = asset($newFilePath);
+
+            $data = [
+                'file_path' => 'export-data/' . $fileName,
+                'file' => $file,
+            ];
+
+            // Mengembalikan path file ke klien
+            DB::commit();
+            return Json::response($data);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            DB::rollBack();
             return Json::exception('Error Model ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
             return Json::exception('Error Query ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         } catch (\ErrorException $e) {
+            DB::rollBack();
             return Json::exception('Error Exception ' . $debug = env('APP_DEBUG', false) == true ? $e : '');
         }
     }
