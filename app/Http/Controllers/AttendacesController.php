@@ -204,6 +204,7 @@ class AttendacesController extends Controller
 
             $file = new File();
             $file->file_name = $fileName;
+            $file->type = 'attendance';
             $file->save();
 
             // Pindahkan file ke dalam folder public
